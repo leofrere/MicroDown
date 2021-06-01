@@ -68,7 +68,10 @@ MicDumperTest >> testPrintEnvironment [
 MicDumperTest >> testPrintHeader [
 | micHeader |
 	micHeader := (parser parse: factory headerLevel3Sample) children first.
-	self assert: (micHeader accept: visitor) equals: 'MicHeaderBlock level:3 "Foo"'
+	self assert: (micHeader accept: visitor) contents equals: '(MicHeaderBlock new
+addChild: (MicTextBlock new
+substring: ''Foo'');
+level: 3)'
 ]
 
 { #category : #'tests-block' }

@@ -152,11 +152,20 @@ MicDumper >> visitFigure: aMicFigure [
 { #category : #'visit-block' }
 MicDumper >> visitHeader: aHeader [
 
-	| text |
-	text := self classPrint: aHeader.
-	text := text , ' level:' , aHeader level asString.
-	text := text , ' "' , aHeader header , '"'.
-	^ text
+
+	stream nextPutAll: '('.
+	aHeader class printOn: stream.
+	stream nextPutAll: ' new
+'.
+	aHeader children do: [ :each | 
+		stream nextPutAll: 'addChild: '.
+		each accept: self.
+		stream nextPutAll: ';
+' ].
+	stream
+		nextPutAll: 'level: '.
+		 aHeader level printOn: stream .
+		stream nextPutAll: ')'
 ]
 
 { #category : #'visit-block' }
