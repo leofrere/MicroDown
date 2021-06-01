@@ -222,7 +222,8 @@ substring: ''Foo'')'
 MicDumperTest >> testPrintQuote [
 	| micQuote |
 	micQuote := (parser parse: factory quoteSample) children first.
-	self assert: (micQuote accept: visitor) equals: 'MicQuoteBlock "Foo"'
+	self assert: (micQuote accept: visitor) contents equals: '(MicQuoteBlock new
+substring: ''Foo'')'
 ]
 
 { #category : #'tests-block' }

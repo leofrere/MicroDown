@@ -237,10 +237,7 @@ MicDumper >> visitParagraph: aParagraph [
 { #category : #'visit-block' }
 MicDumper >> visitQuote: aQuote [
 
-	| text |
-	text := self classPrint: aQuote.
-	text := text , ' "' , aQuote text , '"'.
-	^ text
+	self buildChildAndSubstring: aQuote
 ]
 
 { #category : #'visit-inline block' }
