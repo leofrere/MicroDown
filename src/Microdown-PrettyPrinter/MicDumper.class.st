@@ -228,7 +228,13 @@ MicDumper >> visitQuote: aQuote [
 { #category : #'visit-inline block' }
 MicDumper >> visitRaw: aMicRaw [
 
-	^ self blockPrint: aMicRaw
+	stream nextPutAll: '('.
+	aMicRaw class printOn: stream.
+	stream nextPutAll: ' new
+';
+	nextPutAll: 'substring: ';
+	nextPutAll: (self surround: aMicRaw substring with: '''');
+	nextPutAll: ')'
 ]
 
 { #category : #'visit-block' }

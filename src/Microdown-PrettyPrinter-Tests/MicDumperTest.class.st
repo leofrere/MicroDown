@@ -176,7 +176,8 @@ MicDumperTest >> testPrintMicMonospaceFormatBlock [
 MicDumperTest >> testPrintMicRawBlock [
 	| micRaw |
 	micRaw := (parser parse: factory rawFormatSample) children first children second.
-	self assert: (micRaw accept: visitor) equals: 'MicRawBlock "Foo"'
+	self assert: (micRaw accept: visitor) contents equals: '(MicRawBlock new
+substring: ''Foo'')'
 ]
 
 { #category : #'tests-inline block' }
