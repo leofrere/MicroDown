@@ -16,6 +16,24 @@ MicDumper >> blockPrint: aMicText [
 	^ text
 ]
 
+{ #category : #'visit-inline block' }
+MicDumper >> buildChildAndSubstring: aMicBold [
+
+	stream nextPutAll: '('.
+	aMicBold class printOn: stream.
+	stream nextPutAll: ' new
+'.
+	aMicBold children do: [ :each | 
+		stream nextPutAll: 'addChild: '.
+		each accept: self.
+		stream nextPutAll: ';
+' ].
+	stream
+		nextPutAll: 'substring: ';
+		nextPutAll: (self surround: aMicBold text with: '''');
+		nextPutAll: ')'
+]
+
 { #category : #build }
 MicDumper >> classPrint: aMicFigure [
 
@@ -86,17 +104,8 @@ MicDumper >> visitAnnotation: aMicAnnotation [
 
 { #category : #'visit-inline block' }
 MicDumper >> visitBold: aMicBold [
-	stream nextPutAll: '('.
-	aMicBold class printOn: stream.
-	stream nextPutAll: ' new
-'.
-	aMicBold children do: [ :each | stream nextPutAll: 'addChild: '.
-		each accept: self.
-		stream nextPutAll: ';
-'].
-	stream nextPutAll: 'substring: ';
-	nextPutAll: (self surround: aMicBold text with: '''');
-	nextPutAll: ')'
+
+	self buildChildAndSubstring: aMicBold
 ]
 
 { #category : #'visit-block' }
@@ -159,17 +168,7 @@ MicDumper >> visitHorizontalLine: aHorizontalLine [
 { #category : #'visit-inline block' }
 MicDumper >> visitItalic: aMicItalic [
 
-	stream nextPutAll: '('.
-	aMicItalic class printOn: stream.
-	stream nextPutAll: ' new
-'.
-	aMicItalic children do: [ :each | stream nextPutAll: 'addChild: '.
-		each accept: self.
-		stream nextPutAll: ';
-'].
-	stream nextPutAll: 'substring: ';
-	nextPutAll: (self surround: aMicItalic text with: '''');
-	nextPutAll: ')'
+	self buildChildAndSubstring: aMicItalic
 ]
 
 { #category : #'visit-inline block' }
@@ -220,17 +219,7 @@ MicDumper >> visitMetaData: aMetaData [
 { #category : #'visit-inline block' }
 MicDumper >> visitMonospace: aMicMonospace [
 
-	stream nextPutAll: '('.
-	aMicMonospace class printOn: stream.
-	stream nextPutAll: ' new
-'.
-	aMicMonospace children do: [ :each | stream nextPutAll: 'addChild: '.
-		each accept: self.
-		stream nextPutAll: ';
-'].
-	stream nextPutAll: 'substring: ';
-	nextPutAll: (self surround: aMicMonospace text with: '''');
-	nextPutAll: ')'
+	self buildChildAndSubstring: aMicMonospace
 ]
 
 { #category : #'visit-block' }
@@ -242,17 +231,7 @@ MicDumper >> visitOrderedList: aOrderedList [
 { #category : #'visit-block' }
 MicDumper >> visitParagraph: aParagraph [
 
-	stream nextPutAll: '('.
-	aParagraph class printOn: stream.
-	stream nextPutAll: ' new
-'.
-	aParagraph children do: [ :each | stream nextPutAll: 'addChild: '.
-		each accept: self.
-		stream nextPutAll: ';
-'].
-	stream nextPutAll: 'substring: ';
-	nextPutAll: (self surround: aParagraph text with: '''');
-	nextPutAll: ')'
+	self buildChildAndSubstring: aParagraph
 ]
 
 { #category : #'visit-block' }
@@ -285,17 +264,7 @@ MicDumper >> visitRoot: aRoot [
 { #category : #'visit-inline block' }
 MicDumper >> visitStrike: aMicStrike [
 
-	stream nextPutAll: '('.
-	aMicStrike class printOn: stream.
-	stream nextPutAll: ' new
-'.
-	aMicStrike children do: [ :each | stream nextPutAll: 'addChild: '.
-		each accept: self.
-		stream nextPutAll: ';
-'].
-	stream nextPutAll: 'substring: ';
-	nextPutAll: (self surround: aMicStrike text with: '''');
-	nextPutAll: ')'
+	self buildChildAndSubstring: aMicStrike
 ]
 
 { #category : #'visit-block' }
