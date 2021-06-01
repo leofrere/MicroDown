@@ -207,7 +207,10 @@ MicDumperTest >> testPrintOrderedList [
 MicDumperTest >> testPrintParagraph [
 	| micParagraph |
 	micParagraph := (parser parse: factory paragraphSample) children first.
-	self assert: (micParagraph accept: visitor) equals: 'MicParagraphBlock'
+	self assert: (micParagraph accept: visitor) contents equals: '(MicParagraphBlock new
+addChild: (MicTextBlock new
+substring: ''Foo'');
+substring: ''Foo'')'
 ]
 
 { #category : #'tests-block' }

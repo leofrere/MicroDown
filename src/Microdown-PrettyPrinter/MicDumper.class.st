@@ -213,7 +213,17 @@ MicDumper >> visitOrderedList: aOrderedList [
 { #category : #'visit-block' }
 MicDumper >> visitParagraph: aParagraph [
 
-	^ self classPrint: aParagraph
+	stream nextPutAll: '('.
+	aParagraph class printOn: stream.
+	stream nextPutAll: ' new
+'.
+	aParagraph children do: [ :each | stream nextPutAll: 'addChild: '.
+		each accept: self.
+		stream nextPutAll: ';
+'].
+	stream nextPutAll: 'substring: ';
+	nextPutAll: (self surround: aParagraph text with: '''');
+	nextPutAll: ')'
 ]
 
 { #category : #'visit-block' }
