@@ -263,8 +263,17 @@ MicDumper >> visitRaw: aMicRaw [
 
 { #category : #'visit-block' }
 MicDumper >> visitRoot: aRoot [
-
-	^ self classPrint: aRoot
+	
+	stream nextPutAll: '('.
+	aRoot class printOn: stream.
+	stream nextPutAll: ' new
+'.
+	aRoot children do: [ :each | 
+		stream nextPutAll: 'addChild: '.
+		each accept: self.
+		stream nextPutAll: ';
+' ].
+	stream nextPutAll: ')'
 ]
 
 { #category : #'visit-inline block' }

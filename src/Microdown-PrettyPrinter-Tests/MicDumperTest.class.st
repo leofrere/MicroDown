@@ -233,7 +233,12 @@ substring: ''Foo'')'
 MicDumperTest >> testPrintRoot [
 	| micRoot |
 	micRoot := (parser parse: factory headerLevel3Sample).
-	self assert: (micRoot accept: visitor) equals: 'MicRootBlock'
+	self assert: (micRoot accept: visitor) contents equals: '(MicRootBlock new
+addChild: (MicHeaderBlock new
+addChild: (MicTextBlock new
+substring: ''Foo'');
+level: 3);
+)'
 ]
 
 { #category : #'tests-block' }
