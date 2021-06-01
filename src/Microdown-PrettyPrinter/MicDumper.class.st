@@ -22,6 +22,11 @@ MicDumper >> classPrint: aMicFigure [
 	^ aMicFigure class asString
 ]
 
+{ #category : #accessing }
+MicDumper >> contents [ 	
+	^ stream contents
+]
+
 { #category : #initialization }
 MicDumper >> initialize [ 
 	super initialize.
@@ -40,6 +45,11 @@ MicDumper >> parametersPrint: aDictionnary [
 			ifFalse: [ 
 				text := text , '&' ]].
 	^ text
+]
+
+{ #category : #'writing text' }
+MicDumper >> surround: aString with: aStringMarkup [
+	^ aStringMarkup , aString , aStringMarkup 
 ]
 
 { #category : #'visit-block' }
@@ -241,8 +251,13 @@ MicDumper >> visitTable: aTable [
 
 { #category : #'visit-inline block' }
 MicDumper >> visitText: aMicText [
-
-	^ self blockPrint: aMicText
+	stream nextPutAll: '('.
+	aMicText class printOn: stream.
+	stream nextPutAll: ' new
+';
+	nextPutAll: 'substring: ';
+	nextPutAll: (self surround: aMicText substring with: '''');
+	nextPutAll: ')'
 ]
 
 { #category : #'visit-block' }

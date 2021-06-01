@@ -31,7 +31,7 @@ MicDumperTest >> factory: aFactory [
 MicDumperTest >> setUp [
 	super setUp.
 	factory := MicMicrodownSnippetFactory new.
-	visitor := MicDullDumper new.
+	visitor := MicDumper new.
 	parser := MicroDownParser new
 ]
 
@@ -190,7 +190,8 @@ MicDumperTest >> testPrintMicStrikeFormatBlock [
 MicDumperTest >> testPrintMicTextBlock [
 	| micText |
 	micText := (parser parse: factory headerLevel3Sample) children first children first.
-	self assert: (micText accept: visitor) equals: 'MicTextBlock "Foo"'.
+	self assert: (micText accept: visitor) contents equals: '(MicTextBlock new
+substring: ''Foo'')'.
 
 ]
 
