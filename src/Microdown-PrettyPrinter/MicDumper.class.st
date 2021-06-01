@@ -180,7 +180,10 @@ MicDumper >> visitHeader: aHeader [
 { #category : #'visit-block' }
 MicDumper >> visitHorizontalLine: aHorizontalLine [
 
-	^ self classPrint: aHorizontalLine
+	stream nextPutAll: '('.
+	aHorizontalLine class printOn: stream.
+	stream nextPutAll: ' new';
+	nextPutAll: ')'
 ]
 
 { #category : #'visit-inline block' }

@@ -79,7 +79,7 @@ level: 3)'
 MicDumperTest >> testPrintHorizontalLine [
 	| micHorizontalLine |
 	micHorizontalLine := (parser parse: factory horizontalLineSample) children first.
-	self assert: (micHorizontalLine accept: visitor) equals: 'MicHorizontalLineBlock'
+	self assert: (micHorizontalLine accept: visitor) contents equals: '(MicHorizontalLineBlock new)'
 ]
 
 { #category : #'tests-block' }
