@@ -220,7 +220,17 @@ MicDumper >> visitMetaData: aMetaData [
 { #category : #'visit-inline block' }
 MicDumper >> visitMonospace: aMicMonospace [
 
-	^ self blockPrint: aMicMonospace
+	stream nextPutAll: '('.
+	aMicMonospace class printOn: stream.
+	stream nextPutAll: ' new
+'.
+	aMicMonospace children do: [ :each | stream nextPutAll: 'addChild: '.
+		each accept: self.
+		stream nextPutAll: ';
+'].
+	stream nextPutAll: 'substring: ';
+	nextPutAll: (self surround: aMicMonospace text with: '''');
+	nextPutAll: ')'
 ]
 
 { #category : #'visit-block' }

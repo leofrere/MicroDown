@@ -171,7 +171,8 @@ MicDumperTest >> testPrintMicMathInlineBlock [
 MicDumperTest >> testPrintMicMonospaceFormatBlock [
 	| micMonospace |
 	micMonospace := (parser parse: factory monospaceFormatSample) children first children first.
-	self assert: (micMonospace accept: visitor) equals: 'MicMonospaceFormatBlock "Foo"'
+	self assert: (micMonospace accept: visitor) contents equals: '(MicMonospaceFormatBlock new
+substring: ''Foo'')'
 ]
 
 { #category : #'tests-inline block' }
