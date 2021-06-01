@@ -140,11 +140,28 @@ MicDumper >> visitBold: aMicBold [
 { #category : #'visit-block' }
 MicDumper >> visitCode: aCode [
 
-	| text |
-	text := self classPrint: aCode.
-	text := text , ' parameters:' , aCode firstLine.
-	text := text , ' "' , aCode body , '"'.
-	^ text
+	stream nextPutAll: '('.
+	aCode class printOn: stream.
+	stream nextPutAll: ' new
+'.
+	aCode children do: [ :each | 
+		stream nextPutAll: 'addChild: '.
+		each accept: self.
+		stream nextPutAll: ';
+' ].
+	stream
+		nextPutAll: 'body: ';
+		nextPutAll: (self surround: aCode body with: '''');
+		nextPutAll: ';
+firstTag: ';
+		nextPutAll: (self surround: aCode firstTag with: '''');
+		nextPutAll: ';
+firstLine: ';
+		nextPutAll: (self surround: aCode firstLine with: '''');
+		nextPutAll: ';
+arguments: '.
+		(self buildDictionnary: aCode arguments).
+		stream nextPutAll: ')'
 ]
 
 { #category : #'visit-block' }

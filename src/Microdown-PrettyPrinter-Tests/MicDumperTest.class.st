@@ -47,7 +47,11 @@ label: ''test'')'
 MicDumperTest >> testPrintCode [
 	| micCode |
 	micCode := (parser parse: (factory codeblock: 'smalltalk&label=42' body: 'Foo')) children first.
-	self assert: (micCode accept: visitor) equals: 'MicCodeBlock parameters:smalltalk&label=42 "Foo"'
+	self assert: (micCode accept: visitor) contents equals: '(MicCodeBlock new
+body: ''Foo'';
+firstTag: ''smalltalk&label'';
+firstLine: ''smalltalk&label=42'';
+arguments: {#smalltalk->nil . #label->''42''} asDictionary)'
 ]
 
 { #category : #'tests-block' }
