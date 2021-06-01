@@ -34,6 +34,19 @@ MicDumper >> buildChildAndSubstring: aMicBold [
 		nextPutAll: ')'
 ]
 
+{ #category : #'visit-inline block' }
+MicDumper >> buildDictionnary: aDictionnary [
+
+	stream nextPutAll: '{'.
+	aDictionnary keysAndValuesDo: [ :k :v | 
+		k printOn:stream.
+		stream nextPutAll: '->'.
+		v printOn: stream.
+		k = aDictionnary keys last 
+			ifFalse: [ stream nextPutAll: ' . ' ]  ].
+	stream nextPutAll: '}'
+]
+
 { #category : #build }
 MicDumper >> classPrint: aMicFigure [
 
