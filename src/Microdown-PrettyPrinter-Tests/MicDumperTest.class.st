@@ -53,7 +53,8 @@ MicDumperTest >> testPrintCode [
 MicDumperTest >> testPrintComment [
 	| micComment |
 	micComment := (parser parse: factory commentSample) children first.
-	self assert: (micComment accept: visitor) equals: 'MicCommentBlock "Foo"'
+	self assert: (micComment accept: visitor) contents equals: '(MicCommentBlock new
+text: ''Foo'')'
 ]
 
 { #category : #'tests-block' }

@@ -121,10 +121,19 @@ MicDumper >> visitCode: aCode [
 { #category : #'visit-block' }
 MicDumper >> visitComment: aComment [
 
-	| text |
-	text := self classPrint: aComment.
-	text := text , ' "' , aComment text , '"'.
-	^ text
+	stream nextPutAll: '('.
+	aComment class printOn: stream.
+	stream nextPutAll: ' new
+'.
+	aComment children do: [ :each | 
+		stream nextPutAll: 'addChild: '.
+		each accept: self.
+		stream nextPutAll: ';
+' ].
+	stream
+		nextPutAll: 'text: ';
+		nextPutAll: (self surround: aComment text with: '''');
+		nextPutAll: ')'
 ]
 
 { #category : #'visit-block' }
