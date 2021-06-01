@@ -39,7 +39,8 @@ MicDumperTest >> setUp [
 MicDumperTest >> testPrintAnchor [
 	| micAnchor |
 	micAnchor := (parser parse: factory anchorSample) children first.
-	self assert: (micAnchor accept: visitor) equals: 'MicAnchorBlock "test"'
+	self assert: (micAnchor accept: visitor) contents equals: '(MicAnchorBlock new
+label: ''test'')'
 ]
 
 { #category : #'tests-block' }

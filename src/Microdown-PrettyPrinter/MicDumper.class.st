@@ -73,10 +73,14 @@ MicDumper >> surround: aString with: aStringMarkup [
 { #category : #'visit-block' }
 MicDumper >> visitAnchor: aAnchor [
 
-	| text |
-	text := self classPrint: aAnchor.
-	text := text , ' "' , aAnchor label , '"'.
-	^ text
+	stream nextPutAll: '('.
+	aAnchor class printOn: stream.
+	stream nextPutAll: ' new
+'.
+	stream
+		nextPutAll: 'label: ';
+		nextPutAll: (self surround: aAnchor label with: '''');
+		nextPutAll: ')'
 ]
 
 { #category : #'visit-inline block' }
