@@ -86,8 +86,17 @@ MicDumper >> visitAnnotation: aMicAnnotation [
 
 { #category : #'visit-inline block' }
 MicDumper >> visitBold: aMicBold [
-
-	^ self blockPrint: aMicBold
+	stream nextPutAll: '('.
+	aMicBold class printOn: stream.
+	stream nextPutAll: ' new
+'.
+	aMicBold children do: [ :each | stream nextPutAll: 'addChild: '.
+		each accept: self.
+		stream nextPutAll: ';
+'].
+	stream nextPutAll: 'substring: ';
+	nextPutAll: (self surround: aMicBold text with: '''');
+	nextPutAll: ')'
 ]
 
 { #category : #'visit-block' }

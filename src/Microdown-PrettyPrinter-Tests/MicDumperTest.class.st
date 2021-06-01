@@ -127,7 +127,8 @@ MicDumperTest >> testPrintMicAnnotationBlock [
 MicDumperTest >> testPrintMicBoldFormatBlock [
 	| micBold |
 	micBold := (parser parse: factory boldFormatSample) children first children first.
-	self assert: (micBold accept: visitor) equals: 'MicBoldFormatBlock "Foo"'
+	self assert: (micBold accept: visitor) contents equals: '(MicBoldFormatBlock new
+substring: ''Foo'')'
 
 ]
 
