@@ -104,7 +104,8 @@ MicDumperTest >> testPrintMetaData [
 MicDumperTest >> testPrintMicAnchorReferenceBlock [
 	| micAnchorReference |
 	micAnchorReference := (parser parse: factory anchorReferenceSample) children first children first.
-	self assert: (micAnchorReference accept: visitor) equals: 'MicAnchorReferenceBlock "Foo"'.
+	self assert: (micAnchorReference accept: visitor) contents equals: '(MicAnchorReferenceBlock new
+substring: ''Foo'')'.
 
 
 ]

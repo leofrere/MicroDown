@@ -82,7 +82,7 @@ MicDumper >> visitAnchor: aAnchor [
 { #category : #'visit-inline block' }
 MicDumper >> visitAnchorReference: aMicAnchorReference [
 
-	^ self blockPrint: aMicAnchorReference
+	self buildChildAndSubstring: aMicAnchorReference
 ]
 
 { #category : #'visit-block' }
