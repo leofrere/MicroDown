@@ -147,7 +147,8 @@ MicDumperTest >> testPrintMicFigureBlock [
 MicDumperTest >> testPrintMicItalicFormatBlock [
 	| micItalic |
 	micItalic := (parser parse: factory italicFormatSample) children first children first.
-	self assert: (micItalic accept: visitor) equals: 'MicItalicFormatBlock "Foo"'
+	self assert: (micItalic accept: visitor) contents equals: '(MicItalicFormatBlock new
+substring: ''Foo'')'
 
 ]
 

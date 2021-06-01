@@ -159,7 +159,17 @@ MicDumper >> visitHorizontalLine: aHorizontalLine [
 { #category : #'visit-inline block' }
 MicDumper >> visitItalic: aMicItalic [
 
-	^ self blockPrint: aMicItalic
+	stream nextPutAll: '('.
+	aMicItalic class printOn: stream.
+	stream nextPutAll: ' new
+'.
+	aMicItalic children do: [ :each | stream nextPutAll: 'addChild: '.
+		each accept: self.
+		stream nextPutAll: ';
+'].
+	stream nextPutAll: 'substring: ';
+	nextPutAll: (self surround: aMicItalic text with: '''');
+	nextPutAll: ')'
 ]
 
 { #category : #'visit-inline block' }
