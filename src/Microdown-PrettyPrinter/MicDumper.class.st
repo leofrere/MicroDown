@@ -44,7 +44,7 @@ MicDumper >> buildDictionnary: aDictionnary [
 		v printOn: stream.
 		k = aDictionnary keys last 
 			ifFalse: [ stream nextPutAll: ' . ' ]  ].
-	stream nextPutAll: '}'
+	stream nextPutAll: '} asDictionary'
 ]
 
 { #category : #build }
