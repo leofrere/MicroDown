@@ -259,12 +259,25 @@ MicDumper >> visitListItem: aListItem [
 
 { #category : #'visit-block' }
 MicDumper >> visitMath: aMath [
-
-	| text |
-	text := (self classPrint: aMath) , String space.
-	text := text , (self parametersPrint: aMath arguments asDictionary).
-	text := text , ' "' , aMath body , '"'.
-	^ text
+	stream nextPutAll: '('.
+	aMath class printOn: stream.
+	stream nextPutAll: ' new
+'.
+	aMath children do: [ :each | 
+		stream nextPutAll: 'addChild: '.
+		each accept: self.
+		stream nextPutAll: ';
+' ].
+	stream
+		nextPutAll: 'body: ';
+		nextPutAll: (self surround: aMath body with: '''');
+		nextPutAll: ';
+firstLine: ';
+		nextPutAll: (self surround: aMath firstLine with: '''');
+		nextPutAll: ';
+arguments: '.
+		(self buildDictionnary: aMath arguments).
+		stream nextPutAll: ')'
 ]
 
 { #category : #'visit-inline block' }
