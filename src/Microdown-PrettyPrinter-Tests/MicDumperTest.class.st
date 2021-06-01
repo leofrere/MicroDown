@@ -100,7 +100,9 @@ MicDumperTest >> testPrintMath [
 MicDumperTest >> testPrintMetaData [
 	| micMetaData |
 	micMetaData := (parser parse: factory metaDataSample) children first.
-	self assert: (micMetaData accept: visitor) equals: 'MicMetaDataBlock parameters: ""author": "Foo""'
+	self assert: (micMetaData accept: visitor) contents equals: '(MicMetaDataBlock new
+body: ''"author": "Foo"'';
+firstLine: '''')'
 ]
 
 { #category : #'tests-inline block' }

@@ -218,11 +218,22 @@ MicDumper >> visitMathInline: aMicMathInline [
 { #category : #'visit-block' }
 MicDumper >> visitMetaData: aMetaData [
 
-	| text |
-	text := self classPrint: aMetaData.
-	text := text , ' parameters:' , aMetaData firstLine.
-	text := text , ' "' , aMetaData body , '"'.
-	^ text
+		stream nextPutAll: '('.
+	aMetaData class printOn: stream.
+	stream nextPutAll: ' new
+'.
+	aMetaData children do: [ :each | 
+		stream nextPutAll: 'addChild: '.
+		each accept: self.
+		stream nextPutAll: ';
+' ].
+	stream
+		nextPutAll: 'body: ';
+		nextPutAll: (self surround: aMetaData body with: '''');
+		nextPutAll: ';
+firstLine: ';
+		nextPutAll: (self surround: aMetaData firstLine with: '''');
+		nextPutAll: ')'
 ]
 
 { #category : #'visit-inline block' }
