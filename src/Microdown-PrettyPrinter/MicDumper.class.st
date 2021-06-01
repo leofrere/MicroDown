@@ -110,13 +110,25 @@ MicDumper >> visitAnnotated: aAnnotated [
 
 { #category : #'visit-inline block' }
 MicDumper >> visitAnnotation: aMicAnnotation [
-	"arguments with parameters is nil like the name"
-	"| text |
-	text := aMicAnnotation class asString , String space.
-	text := text , (self parametersPrint: aMicAnnotation parameters asDictionary).
-	text := text , ' ""' , aMicAnnotation name , '""'."
-	^ self blockPrint: aMicAnnotation
-	
+	stream nextPutAll: '('.
+	aMicAnnotation class printOn: stream.
+	stream nextPutAll: ' new
+'.
+	aMicAnnotation children do: [ :each | 
+		stream nextPutAll: 'addChild: '.
+		each accept: self.
+		stream nextPutAll: ';
+' ].
+	stream
+		nextPutAll: 'substring: ';
+		nextPutAll: (self surround: aMicAnnotation text with: '''');
+		nextPutAll: ';
+name: ';
+		nextPutAll: (self surround: aMicAnnotation name with: '''');
+		nextPutAll: ';
+arguments: '.
+		(self buildDictionnary: aMicAnnotation arguments).
+		stream nextPutAll: ')'
 ]
 
 { #category : #'visit-inline block' }
