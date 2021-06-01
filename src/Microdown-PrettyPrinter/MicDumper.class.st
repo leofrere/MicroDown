@@ -285,7 +285,17 @@ MicDumper >> visitRoot: aRoot [
 { #category : #'visit-inline block' }
 MicDumper >> visitStrike: aMicStrike [
 
-	^ self blockPrint: aMicStrike
+	stream nextPutAll: '('.
+	aMicStrike class printOn: stream.
+	stream nextPutAll: ' new
+'.
+	aMicStrike children do: [ :each | stream nextPutAll: 'addChild: '.
+		each accept: self.
+		stream nextPutAll: ';
+'].
+	stream nextPutAll: 'substring: ';
+	nextPutAll: (self surround: aMicStrike text with: '''');
+	nextPutAll: ')'
 ]
 
 { #category : #'visit-block' }
