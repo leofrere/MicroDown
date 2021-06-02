@@ -40,7 +40,8 @@ MicDumperTest >> testPrintAnchor [
 	| micAnchor |
 	micAnchor := (parser parse: factory anchorSample) children first.
 	self assert: (micAnchor accept: visitor) contents equals: '(MicAnchorBlock new
-label: ''test'')'
+label: ''test'';
+setParser: MicroDownParser new)'
 ]
 
 { #category : #'tests-block' }
@@ -51,7 +52,8 @@ MicDumperTest >> testPrintCode [
 body: ''Foo'';
 firstTag: ''smalltalk&label'';
 firstLine: ''smalltalk&label=42'';
-arguments: {#smalltalk->nil . #label->''42''} asDictionary)'
+arguments: {#smalltalk->nil . #label->''42''} asDictionary;
+setParser: MicroDownParser new)'
 ]
 
 { #category : #'tests-block' }
@@ -59,7 +61,8 @@ MicDumperTest >> testPrintComment [
 	| micComment |
 	micComment := (parser parse: factory commentSample) children first.
 	self assert: (micComment accept: visitor) contents equals: '(MicCommentBlock new
-text: ''Foo'')'
+text: ''Foo'';
+setParser: MicroDownParser new)'
 ]
 
 { #category : #'tests-block' }
@@ -76,15 +79,18 @@ MicDumperTest >> testPrintHeader [
 	micHeader := (parser parse: factory headerLevel3Sample) children first.
 	self assert: (micHeader accept: visitor) contents equals: '(MicHeaderBlock new
 addChild: (MicTextBlock new
-substring: ''Foo'');
-level: 3)'
+substring: ''Foo'';
+setParser: MicroDownParser new);
+level: 3;
+setParser: MicroDownParser new)'
 ]
 
 { #category : #'tests-block' }
 MicDumperTest >> testPrintHorizontalLine [
 	| micHorizontalLine |
 	micHorizontalLine := (parser parse: factory horizontalLineSample) children first.
-	self assert: (micHorizontalLine accept: visitor) contents equals: '(MicHorizontalLineBlock new)'
+	self assert: (micHorizontalLine accept: visitor) contents equals: '(MicHorizontalLineBlock new
+setParser: MicroDownParser new)'
 ]
 
 { #category : #'tests-block' }

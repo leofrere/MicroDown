@@ -16,7 +16,7 @@ MicDumper >> blockPrint: aMicText [
 	^ text
 ]
 
-{ #category : #'visit-inline block' }
+{ #category : #build }
 MicDumper >> buildChildAndSubstring: aMicBold [
 
 	stream nextPutAll: '('.
@@ -31,10 +31,13 @@ MicDumper >> buildChildAndSubstring: aMicBold [
 	stream
 		nextPutAll: 'substring: ';
 		nextPutAll: (self surround: aMicBold text with: '''');
-		nextPutAll: ')'
+		nextPutAll: ';
+'.
+		self setParser.
+		stream nextPutAll: ')'
 ]
 
-{ #category : #'visit-inline block' }
+{ #category : #build }
 MicDumper >> buildDictionnary: aDictionnary [
 
 	stream nextPutAll: '{'.
@@ -78,6 +81,12 @@ MicDumper >> parametersPrint: aDictionnary [
 	^ text
 ]
 
+{ #category : #build }
+MicDumper >> setParser [
+
+	stream nextPutAll: 'setParser: MicroDownParser new'
+]
+
 { #category : #'writing text' }
 MicDumper >> surround: aString with: aStringMarkup [
 	^ aStringMarkup , aString , aStringMarkup 
@@ -85,7 +94,6 @@ MicDumper >> surround: aString with: aStringMarkup [
 
 { #category : #'visit-block' }
 MicDumper >> visitAnchor: aAnchor [
-
 	stream nextPutAll: '('.
 	aAnchor class printOn: stream.
 	stream nextPutAll: ' new
@@ -93,7 +101,10 @@ MicDumper >> visitAnchor: aAnchor [
 	stream
 		nextPutAll: 'label: ';
 		nextPutAll: (self surround: aAnchor label with: '''');
-		nextPutAll: ')'
+		nextPutAll: ';
+'.
+		self setParser.
+		stream nextPutAll: ')'
 ]
 
 { #category : #'visit-inline block' }
@@ -128,6 +139,9 @@ name: ';
 		nextPutAll: ';
 arguments: '.
 		(self buildDictionnary: aMicAnnotation arguments).
+		stream nextPutAll: ';
+'.
+		self setParser.
 		stream nextPutAll: ')'
 ]
 
@@ -161,6 +175,9 @@ firstLine: ';
 		nextPutAll: ';
 arguments: '.
 		(self buildDictionnary: aCode arguments).
+		stream nextPutAll: ';
+'.
+		self setParser.
 		stream nextPutAll: ')'
 ]
 
@@ -179,7 +196,10 @@ MicDumper >> visitComment: aComment [
 	stream
 		nextPutAll: 'text: ';
 		nextPutAll: (self surround: aComment text with: '''');
-		nextPutAll: ')'
+		nextPutAll: ';
+'.
+		self setParser.
+		stream nextPutAll: ')'
 ]
 
 { #category : #'visit-block' }
@@ -220,6 +240,9 @@ MicDumper >> visitHeader: aHeader [
 	stream
 		nextPutAll: 'level: '.
 		 aHeader level printOn: stream .
+		stream nextPutAll: ';
+'.
+		self setParser.
 		stream nextPutAll: ')'
 ]
 
@@ -228,8 +251,10 @@ MicDumper >> visitHorizontalLine: aHorizontalLine [
 
 	stream nextPutAll: '('.
 	aHorizontalLine class printOn: stream.
-	stream nextPutAll: ' new';
-	nextPutAll: ')'
+	stream nextPutAll: ' new
+'.
+	self setParser.
+	stream nextPutAll: ')'
 ]
 
 { #category : #'visit-inline block' }
@@ -277,6 +302,9 @@ firstLine: ';
 		nextPutAll: ';
 arguments: '.
 		(self buildDictionnary: aMath arguments).
+		stream nextPutAll: ';
+'.
+		self setParser.
 		stream nextPutAll: ')'
 ]
 
@@ -304,7 +332,10 @@ MicDumper >> visitMetaData: aMetaData [
 		nextPutAll: ';
 firstLine: ';
 		nextPutAll: (self surround: aMetaData firstLine with: '''');
-		nextPutAll: ')'
+		nextPutAll: ';
+'.
+		self setParser.
+		stream nextPutAll: ')'
 ]
 
 { #category : #'visit-inline block' }
@@ -340,7 +371,10 @@ MicDumper >> visitRaw: aMicRaw [
 ';
 	nextPutAll: 'substring: ';
 	nextPutAll: (self surround: aMicRaw substring with: '''');
-	nextPutAll: ')'
+	nextPutAll: ';
+'.
+	self setParser.
+	stream nextPutAll: ')'
 ]
 
 { #category : #'visit-block' }
@@ -355,6 +389,9 @@ MicDumper >> visitRoot: aRoot [
 		each accept: self.
 		stream nextPutAll: ';
 ' ].
+	stream nextPutAll: ';
+'.
+		self setParser.
 	stream nextPutAll: ')'
 ]
 
@@ -378,7 +415,10 @@ MicDumper >> visitText: aMicText [
 ';
 	nextPutAll: 'substring: ';
 	nextPutAll: (self surround: aMicText substring with: '''');
-	nextPutAll: ')'
+	nextPutAll: ';
+'.
+	self setParser.
+	stream nextPutAll: ')'
 ]
 
 { #category : #'visit-block' }
