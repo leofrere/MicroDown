@@ -101,6 +101,7 @@ MicTextualMicrodownExporter >> visitBold: aBoldFormat [
 { #category : #'visit-block' }
 MicTextualMicrodownExporter >> visitCode: aMicCodeBlock [ 
 
+	 builder newLine.
 	 builder
 		  codeblock: aMicCodeBlock body
 		  firstLineAssociations: aMicCodeBlock argumentAssociations
@@ -135,6 +136,7 @@ MicTextualMicrodownExporter >> visitFigure: aFigure [
 { #category : #'visit-block' }
 MicTextualMicrodownExporter >> visitHeader: aHeader [
 
+	builder newLine.
 	builder 
 		header: [:b | aHeader headerElements do: [ :each | each accept: self ] ] 
 		withLevel: aHeader level
@@ -197,6 +199,7 @@ MicTextualMicrodownExporter >> visitMonospace: aMonospaceFormat [
 { #category : #'visit-block' }
 MicTextualMicrodownExporter >> visitOrderedList: anOrderedList [
 
+	builder newLine.
 	builder unorderedListDuring: [ super visitOrderedList: anOrderedList ]
 ]
 
@@ -208,6 +211,8 @@ MicTextualMicrodownExporter >> visitOrderedListItem: anItem [
 
 { #category : #'visit-block' }
 MicTextualMicrodownExporter >> visitParagraph: aParagraph [
+
+	builder newLine.
 	builder 
 		paragraph: [ super visitParagraph: aParagraph ]
 ]
