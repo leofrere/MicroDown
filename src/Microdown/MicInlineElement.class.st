@@ -74,9 +74,10 @@ MicInlineElement >> cleanSubstring [
 					(each isEmpty and: i>1) ifTrue: [ s << self escapeCharacter ] ifFalse: [ s << each ] ] ] ) ]
 ]
 
-{ #category : #printing }
+{ #category : #visiting }
 MicInlineElement >> closeMe [
 	"Hook to perform post creation action. The name is the same as for blocks."
+	
 ]
 
 { #category : #accessing }
@@ -91,7 +92,7 @@ MicInlineElement >> end: anInteger [
 
 { #category : #operations }
 MicInlineElement >> escapeCharacter [
-	^ MicEscapeDelimiter markup
+	^ '\'
 ]
 
 { #category : #initialization }
@@ -121,20 +122,17 @@ MicInlineElement >> literal [
 { #category : #printing }
 MicInlineElement >> printOn: aStream [
 
-	(self kind == #basic) 
-		ifTrue: [ aStream nextPutAll: self substring ] 
-		ifFalse: [ 
-			| contents |
-			contents := children 
-				ifEmpty: [ self substring ] 
-				ifNotEmpty: [ self childrenPrintOn ].
-			aStream nextPut: $[;
+	| contents |
+	contents := children 
+		ifEmpty: [ self substring ] 
+		ifNotEmpty: [ self childrenPrintOn ].
+	aStream nextPut: $[;
 				nextPutAll: contents;
 				nextPut: $];
 				nextPut: $(;
 				nextPutAll: self kind;
 				nextPut: $) 
-		]
+
 ]
 
 { #category : #accessing }
