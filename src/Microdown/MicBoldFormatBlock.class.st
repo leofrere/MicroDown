@@ -3,7 +3,7 @@ I represent a bold text section. I'm delimited using `**` as in `**bold**` to ob
 "
 Class {
 	#name : #MicBoldFormatBlock,
-	#superclass : #MicInlineElement,
+	#superclass : #MicFormatBlock,
 	#category : #'Microdown-ModelInline'
 }
 
@@ -12,18 +12,18 @@ MicBoldFormatBlock >> accept: aVisitor [
 	^ aVisitor visitBold: self
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #utils }
 MicBoldFormatBlock >> closingDelimiter [
 
  	^ MicBoldDelimiter markup
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #utils }
 MicBoldFormatBlock >> kind [
 	^ #bold
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #utils }
 MicBoldFormatBlock >> openingDelimiter [
 
  	^ MicBoldDelimiter markup

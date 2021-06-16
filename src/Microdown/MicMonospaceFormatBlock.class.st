@@ -3,9 +3,14 @@ I represent a monospaced text section. I'm delimited using `\`` as in `\`monospa
 "
 Class {
 	#name : #MicMonospaceFormatBlock,
-	#superclass : #MicInlineElement,
+	#superclass : #MicFormatBlock,
 	#category : #'Microdown-ModelInline'
 }
+
+{ #category : #testing }
+MicMonospaceFormatBlock class >> cleanSubstring [
+	"does nothing on purpose"
+]
 
 { #category : #testing }
 MicMonospaceFormatBlock class >> isEvaluated [

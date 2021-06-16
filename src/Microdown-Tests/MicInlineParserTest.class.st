@@ -2,18 +2,18 @@
 These tests should be merged in MicrodDownInlineParserTest
 "
 Class {
-	#name : #MicInlineSplitterTest,
+	#name : #MicInlineParserTest,
 	#superclass : #TestCase,
 	#category : #'Microdown-Tests-Parser'
 }
 
 { #category : #access }
-MicInlineSplitterTest >> splitter [
+MicInlineParserTest >> splitter [
 	^ MicInlineParser new
 ]
 
 { #category : #'tests - anchors' }
-MicInlineSplitterTest >> testAnchorReference [
+MicInlineParserTest >> testAnchorReference [
 
 	| res |
 	res := self splitter parse: 'abc*@anchorA@*def'.
@@ -25,7 +25,7 @@ MicInlineSplitterTest >> testAnchorReference [
 ]
 
 { #category : #'tests - anchors' }
-MicInlineSplitterTest >> testAnchorReferenceUnevaluated [
+MicInlineParserTest >> testAnchorReferenceUnevaluated [
 
 	"When isEvaluated class method returns false, like anchor reference's case, inline inside shoudn't be evaluated"
 
@@ -38,37 +38,36 @@ MicInlineSplitterTest >> testAnchorReferenceUnevaluated [
 ]
 
 { #category : #'tests - annotation' }
-MicInlineSplitterTest >> testAnnotationWithParameters [
+MicInlineParserTest >> testAnnotationWithParameters [
+
 	| res |
-	self skip.
-	"arguments of annotion is nil"
-	res := self splitter start: 'abc<?an annotation|key=cite&label=42?>def'.
+	res := self splitter parse:
+		       'abc<?an annotation|key=cite&label=42?>def'.
 	self
 		assert: (res collect: [ :x | x printString ])
-		equals: {'abc' . '[an annotation|key=cite&label=42](annotation)' . 'def'}.
+		equals: { 'abc'. '<?an annotation|key=cite&label=42?>'.
+			'def' }.
 	self assert: (res second isKindOf: MicAnnotationBlock).
 	self assert: (res second arguments at: 'key') equals: 'cite'.
 	self assert: (res second arguments at: 'label') equals: '42'
-
 ]
 
 { #category : #'tests - annotation' }
-MicInlineSplitterTest >> testAnnotationWithParametersWithBlank [
+MicInlineParserTest >> testAnnotationWithParametersWithBlank [
+
 	| res |
-	self skip.
-	"arguments of annotion is nil"
-	res := self splitter start: 'abc<?an annotation|key=&label=42?>def'.
+	res := self splitter parse: 'abc<?an annotation|key=&label=42?>def'.
 	self
 		assert: (res collect: [ :x | x printString ])
-		equals: {'abc' . '[an annotation|key=&label=42](annotation)' . 'def'}.
+		equals: { 'abc'. '<?an annotation|key=&label=42?>'.
+			'def' }.
 	self assert: (res second isKindOf: MicAnnotationBlock).
 	self assert: (res second arguments at: 'key') equals: ''.
 	self assert: (res second arguments at: 'label') equals: '42'
-
 ]
 
 { #category : #'tests - formats' }
-MicInlineSplitterTest >> testBold [
+MicInlineParserTest >> testBold [
 
 	| res |
 	res := self splitter parse: 'abc**bold**def'.
@@ -85,18 +84,21 @@ MicInlineSplitterTest >> testBold [
 ]
 
 { #category : #'tests - escape' }
-MicInlineSplitterTest >> testEscapeCharacter [
+MicInlineParserTest >> testEscapeCharacter [
 	"Test the escape \ in simple case (here, bold one)"
 
 	| res |
 	res := self splitter parse: 'abc\**test**last'.
+	self assert: res first class equals: MicTextBlock.
+	
+	"The following is plain wrong we are losing the \ information!"
 	self
 		assert: (res collect: [ :x | x printString ])
 		equals: { 'abc**test**last' }
 ]
 
 { #category : #'tests - escape' }
-MicInlineSplitterTest >> testEscapeCharacterAtBeginning [
+MicInlineParserTest >> testEscapeCharacterAtBeginning [
 	"Test the escape \ in simple case (here, bold one)"
 
 	| res |
@@ -107,7 +109,7 @@ MicInlineSplitterTest >> testEscapeCharacterAtBeginning [
 ]
 
 { #category : #'tests - escape' }
-MicInlineSplitterTest >> testEscapeCharacterInLinkName [
+MicInlineParserTest >> testEscapeCharacterInLinkName [
 	"Test the escape \ in link description"
 
 	| res |
@@ -118,7 +120,7 @@ MicInlineSplitterTest >> testEscapeCharacterInLinkName [
 ]
 
 { #category : #'tests - escape' }
-MicInlineSplitterTest >> testEscapeCharacterInNestedCase [
+MicInlineParserTest >> testEscapeCharacterInNestedCase [
 	"Test the escape \ in case of nested formats"
 
 	| res |
@@ -129,7 +131,7 @@ MicInlineSplitterTest >> testEscapeCharacterInNestedCase [
 ]
 
 { #category : #'tests - escape' }
-MicInlineSplitterTest >> testEscapeCharacterInNestedLinkName [
+MicInlineParserTest >> testEscapeCharacterInNestedLinkName [
 	"Test the escape \ in case of nested linknames"
 
 	| res |
@@ -140,30 +142,42 @@ MicInlineSplitterTest >> testEscapeCharacterInNestedLinkName [
 ]
 
 { #category : #'tests to make green again' }
-MicInlineSplitterTest >> testEscapeCharacterWithNoCharacterAfter [
+MicInlineParserTest >> testEscapeCharacterWithNoCharacterAfter [
+
 	| res |
 	self skip.
-	res := self splitter start: '**bold**\'.
+	res := self splitter parse: '**bold**\'.
 	self
 		assert: (res collect: [ :x | x printString ])
-		equals: {'**bold**\'}.
+		equals: { '**bold**\' }
 ]
 
 { #category : #'tests - formats' }
-MicInlineSplitterTest >> testEscapeMonospace [
+MicInlineParserTest >> testEscapeMonospace [
 	"When isEvaluated class method returns false, like monospace's case, inline inside shoudn't be evaluated"
 
 	| res |
+	self skip.
 	res := self splitter parse: 'abc`\`monospace\``efg'.
 	self
 		assert: (res collect: [ :x | x printString ])
-		equals: { 'abc'. '[`monospace`](monospace)'.
-		'efg' }.
+		equals: { 'abc'. '[\`monospace\`](monospace)'. 'efg' }.
 	self assert: res second class equals: MicMonospaceFormatBlock
 ]
 
+{ #category : #'tests - escape' }
+MicInlineParserTest >> testEscapeTripleBold [
+	"Test the escape \ in case of nested formats"
+
+	| res |
+	res := self splitter parse:  'c\***bo**la'.
+	self
+		assert: (res collect: [ :x | x printString ])
+		equals: {'c*' . '[bo](bold)' . 'la'}.
+]
+
 { #category : #'tests - various' }
-MicInlineSplitterTest >> testExclamationMark [
+MicInlineParserTest >> testExclamationMark [
 
 	"Test that 'bla!bla' is ok, and not a failed image, same goes for '![goo]no parenthesis'"
 
@@ -179,7 +193,7 @@ MicInlineSplitterTest >> testExclamationMark [
 ]
 
 { #category : #'tests - figure' }
-MicInlineSplitterTest >> testFigure [
+MicInlineParserTest >> testFigure [
 	"Test the image annotation ![AltText](url)"
 
 	| res |
@@ -196,7 +210,7 @@ MicInlineSplitterTest >> testFigure [
 ]
 
 { #category : #'tests - figure' }
-MicInlineSplitterTest >> testFigureWithBracketInsteadOfParentheses [
+MicInlineParserTest >> testFigureWithBracketInsteadOfParentheses [
 	"Test the image annotation ![AltText](url)"
 
 	| res |
@@ -208,7 +222,7 @@ MicInlineSplitterTest >> testFigureWithBracketInsteadOfParentheses [
 ]
 
 { #category : #'tests - figure' }
-MicInlineSplitterTest >> testFigureWithParameters [
+MicInlineParserTest >> testFigureWithParameters [
 
 	"Test the image annotation ![AltText](url)"
 
@@ -229,7 +243,7 @@ MicInlineSplitterTest >> testFigureWithParameters [
 ]
 
 { #category : #'tests - figure' }
-MicInlineSplitterTest >> testFigureWithParametersWithBlank [
+MicInlineParserTest >> testFigureWithParametersWithBlank [
 
 	"Test the image annotation ![AltText](url)"
 
@@ -250,7 +264,7 @@ MicInlineSplitterTest >> testFigureWithParametersWithBlank [
 ]
 
 { #category : #'tests - figure' }
-MicInlineSplitterTest >> testFigureWithParenthesesInsteadOfBracket [
+MicInlineParserTest >> testFigureWithParenthesesInsteadOfBracket [
 	"Test the image annotation ![AltText](url)"
 
 	| res |
@@ -262,7 +276,7 @@ MicInlineSplitterTest >> testFigureWithParenthesesInsteadOfBracket [
 ]
 
 { #category : #'tests - formats' }
-MicInlineSplitterTest >> testItalic [
+MicInlineParserTest >> testItalic [
 
 	| res |
 	res := self splitter parse: 'abc_italics_def'.
@@ -277,7 +291,7 @@ MicInlineSplitterTest >> testItalic [
 ]
 
 { #category : #'tests - formats' }
-MicInlineSplitterTest >> testItalicNestedInBold [
+MicInlineParserTest >> testItalicNestedInBold [
 
 	| res |
 	res := self splitter parse: 'abc**bold_italic_bold**xyz'.
@@ -288,7 +302,7 @@ MicInlineSplitterTest >> testItalicNestedInBold [
 ]
 
 { #category : #'tests - formats' }
-MicInlineSplitterTest >> testItalicNestedInBoldWithSpace [
+MicInlineParserTest >> testItalicNestedInBoldWithSpace [
 
 	| res |
 	res := self splitter parse: 'abc**x_y_z**cba'.
@@ -298,7 +312,7 @@ MicInlineSplitterTest >> testItalicNestedInBoldWithSpace [
 ]
 
 { #category : #'tests - math' }
-MicInlineSplitterTest >> testMath [
+MicInlineParserTest >> testMath [
 
 	| res |
 	res := self splitter parse: 'abc$	V_i = C_0 - C_3	$def'.
@@ -310,7 +324,7 @@ MicInlineSplitterTest >> testMath [
 ]
 
 { #category : #'tests - math' }
-MicInlineSplitterTest >> testMath2 [
+MicInlineParserTest >> testMath2 [
 
 	| res |
 	res := self splitter parse: 'abc$math env$def'.
@@ -320,7 +334,7 @@ MicInlineSplitterTest >> testMath2 [
 ]
 
 { #category : #'tests - math' }
-MicInlineSplitterTest >> testMathshouldBeUnevaluated [
+MicInlineParserTest >> testMathshouldBeUnevaluated [
 
 	"When isEvaluated class method returns false, like math's case, inline inside shoudn't be evaluated"
 
@@ -333,17 +347,17 @@ MicInlineSplitterTest >> testMathshouldBeUnevaluated [
 ]
 
 { #category : #'tests - formats' }
-MicInlineSplitterTest >> testMonospace [
+MicInlineParserTest >> testMonospace [
 
 	| res |
-	res := self splitter parse: 'abc`block`def'.
+	res := self splitter parse: 'ab`block`de'.
 	self
 		assert: (res collect: [ :x | x printString ])
-		equals: { 'abc'. '[block](monospace)'. 'def' }
+		equals: { 'ab'. '[block](monospace)'. 'de' }
 ]
 
 { #category : #'tests - formats' }
-MicInlineSplitterTest >> testMonospaceUnevaluated [
+MicInlineParserTest >> testMonospaceUnevaluated [
 	"When isEvaluated class method returns false, like monospace's case, inline inside shoudn't be evaluated"
 
 	| res |
@@ -356,7 +370,7 @@ MicInlineSplitterTest >> testMonospaceUnevaluated [
 ]
 
 { #category : #'tests - formats' }
-MicInlineSplitterTest >> testMultipleSequenceFormats [
+MicInlineParserTest >> testMultipleSequenceFormats [
 
 	"Test with multiple annotations"
 
@@ -369,7 +383,7 @@ MicInlineSplitterTest >> testMultipleSequenceFormats [
 ]
 
 { #category : #'tests - various' }
-MicInlineSplitterTest >> testNoAnnotation [
+MicInlineParserTest >> testNoAnnotation [
 
 	| res |
 	res := self splitter parse: 'abc'.
@@ -379,8 +393,28 @@ MicInlineSplitterTest >> testNoAnnotation [
 	self assert: res first printString equals: 'abc def gh'
 ]
 
+{ #category : #'tests - formats' }
+MicInlineParserTest >> testOverlappingFormat [
+
+	| res |
+	res := self splitter parse: 'ab**boldstart_ boldend** italicEnd_de'.
+	self
+		assert: (res collect: [ :x | x printString ])
+		equals: #('ab' '[boldstart_ boldend](bold)' ' italicEnd_de')
+]
+
+{ #category : #'tests - formats' }
+MicInlineParserTest >> testOverlappingFormat2 [
+
+	| res |
+	res := self splitter parse: 'ab**boldstart_ boldend** _italicstart zz italicEnd_de'.
+	self
+		assert: (res collect: [ :x | x printString ]) ""
+		equals: #('ab' '[boldstart_ boldend](bold)' ' ' '[italicstart zz italicEnd](italic)' 'de')
+]
+
 { #category : #'tests - various' }
-MicInlineSplitterTest >> testParseEmptyText [
+MicInlineParserTest >> testParseEmptyText [
 
 	| res |
 	res := self splitter parse: ''.
@@ -388,7 +422,7 @@ MicInlineSplitterTest >> testParseEmptyText [
 ]
 
 { #category : #'tests - raw' }
-MicInlineSplitterTest >> testRaw [
+MicInlineParserTest >> testRaw [
 
 	| res |
 	res := self splitter parse: 'abc{{someRaw}}def'.
@@ -398,7 +432,7 @@ MicInlineSplitterTest >> testRaw [
 ]
 
 { #category : #'tests - raw' }
-MicInlineSplitterTest >> testRawUnevaluated [
+MicInlineParserTest >> testRawUnevaluated [
 
 	"When isEvaluated class method returns false, like raw's case, inline inside shoudn't be evaluated"
 
@@ -411,7 +445,7 @@ MicInlineSplitterTest >> testRawUnevaluated [
 ]
 
 { #category : #'tests - formats' }
-MicInlineSplitterTest >> testSequenceOfFormats [
+MicInlineParserTest >> testSequenceOfFormats [
 	"Test with multiple annotations"
 
 	| res |
@@ -422,33 +456,31 @@ MicInlineSplitterTest >> testSequenceOfFormats [
 		'last' }
 ]
 
-{ #category : #'tests to make green again' }
-MicInlineSplitterTest >> testSplitAnnotation [
+{ #category : #'tests - annotation' }
+MicInlineParserTest >> testSplitAnnotation [
+
 	| res |
-	self skip.
-	self flag: #fixMe.
-	
-	res := self splitter start: 'abc<?type:value|key1=val1&key2=val2?>def'.
+	res := self splitter parse:
+		       'abc<?type:value|key1=val1&key2=val2?>def'.
 	self
 		assert: (res collect: [ :x | x printString ])
-		equals: {'abc' . '[type:value|key1=val1&key2=val2](annotation)' . 'def'}.
+		equals: { 'abc'. '<?type:value|key1=val1&key2=val2?>'.
+			'def' }
 ]
 
-{ #category : #'tests to make green again' }
-MicInlineSplitterTest >> testSplitBlockAnnotation [
+{ #category : #'tests - annotation' }
+MicInlineParserTest >> testSplitBlockAnnotation [
+
 	| res |
-	self skip.
-	self flag: #fixMe.
-	res := self splitter start: 'abc<?an annotation?>def'.
+	res := self splitter parse: 'abc<?an annotation?>def'.
 	self
 		assert: (res collect: [ :x | x printString ])
-		equals: {'abc' . '[an annotation](annotation)' . 'def'}.
+		equals: { 'abc'. '<?an annotation?>'. 'def' }.
 	self assert: (res second isKindOf: MicAnnotationBlock)
-
 ]
 
 { #category : #'tests - link' }
-MicInlineSplitterTest >> testSplitBlockLink [
+MicInlineParserTest >> testSplitBlockLink [
 	"Test the link annotation [LinkText](url)"
 
 	| res |
@@ -460,35 +492,33 @@ MicInlineSplitterTest >> testSplitBlockLink [
 	self assert: res second url segments first equals: 'myURL'
 ]
 
-{ #category : #'tests to make green again' }
-MicInlineSplitterTest >> testSplitBlockLinkIncomplete [
-	"Test the annotation [LinkText] -> should return a link with url as linktext"
+{ #category : #'tests - link' }
+MicInlineParserTest >> testSplitBlockLinkIncomplete [
 
 	| res |
-	self skip.
-	res := self splitter start: 'abc[LinkText]last'.
+	res := self splitter parse: 'abc[LinkText]last'.
 	self
 		assert: (res collect: [ :x | x printString ])
-		equals: {'abc' . '[LinkText](linkName)' . 'last'}.
-	self assert: res second url equals: 'LinkText'
+		equals: { 'abc[LinkText]last' }.
+	self assert: res first class equals: MicTextBlock
 ]
 
 { #category : #'tests - link' }
-MicInlineSplitterTest >> testSplitBlockLinkInlineImage [
-	"Test the link annotation [![alttext](imageurl)](url)"
+MicInlineParserTest >> testSplitBlockLinkInlineImage [
 
 	| res |
-	self skip.
-	res := self splitter
-		start: 'abc[![alttext](imageurl)](url)last'.
+	res := self splitter parse: 'abc[![alttext](imageurl)](url)last'.
 	self
 		assert: (res collect: [ :x | x printString ])
-		equals: {'abc' . '[![alttext](/imageurl)](/url)' . 'last'}.
-	self assert: res second children first url segments first equals: 'imageurl'
+		equals: { 'abc'. '[![alttext](/imageurl)](/url)'.
+			'last' }.
+	self
+		assert: res second children first url segments first
+		equals: 'imageurl'
 ]
 
 { #category : #'tests - link' }
-MicInlineSplitterTest >> testSplitBlockLinkWithBracketInsteadOfParentheses [
+MicInlineParserTest >> testSplitBlockLinkWithBracketInsteadOfParentheses [
 
 	"Test the link annotation [LinkText](url)"
 
@@ -500,7 +530,7 @@ MicInlineSplitterTest >> testSplitBlockLinkWithBracketInsteadOfParentheses [
 ]
 
 { #category : #'tests - link' }
-MicInlineSplitterTest >> testSplitBlockLinkWithParenthesesInsteadOfBracket [
+MicInlineParserTest >> testSplitBlockLinkWithParenthesesInsteadOfBracket [
 
 	"Test the link annotation [LinkText](url)"
 
@@ -512,7 +542,7 @@ MicInlineSplitterTest >> testSplitBlockLinkWithParenthesesInsteadOfBracket [
 ]
 
 { #category : #'tests - formats' }
-MicInlineSplitterTest >> testStrike [
+MicInlineParserTest >> testStrike [
 
 	| res |
 	res := self splitter parse: 'abc~strike~def'.
@@ -523,7 +553,7 @@ MicInlineSplitterTest >> testStrike [
 ]
 
 { #category : #'tests to make green again' }
-MicInlineSplitterTest >> testTwoConsecutiveEscapeCharacter [
+MicInlineParserTest >> testTwoConsecutiveEscapeCharacter [
 	"we should have just one escape"
 	| res |
 	self skip.
@@ -534,7 +564,7 @@ MicInlineSplitterTest >> testTwoConsecutiveEscapeCharacter [
 ]
 
 { #category : #'tests - annotation' }
-MicInlineSplitterTest >> testUnclosedAnnotation [
+MicInlineParserTest >> testUnclosedAnnotation [
 
 	| res |
 	res := self splitter parse: 'abc<?an annotation>def'.
@@ -544,7 +574,7 @@ MicInlineSplitterTest >> testUnclosedAnnotation [
 ]
 
 { #category : #'tests - formats' }
-MicInlineSplitterTest >> testUnclosedBold [
+MicInlineParserTest >> testUnclosedBold [
 
 	| res |
 	res := self splitter parse: 'abc**xyz'.
@@ -552,7 +582,7 @@ MicInlineSplitterTest >> testUnclosedBold [
 ]
 
 { #category : #'tests - figure' }
-MicInlineSplitterTest >> testUnclosedFigure [
+MicInlineParserTest >> testUnclosedFigure [
 	"Test the image annotation ![AltText](url)"
 
 	| res |
@@ -563,7 +593,7 @@ MicInlineSplitterTest >> testUnclosedFigure [
 ]
 
 { #category : #'tests - math' }
-MicInlineSplitterTest >> testUnclosedMath [
+MicInlineParserTest >> testUnclosedMath [
 
 	| res |
 	res := self splitter parse: 'abc$	V_i = C_0 - C_3	&def'.
@@ -573,7 +603,7 @@ MicInlineSplitterTest >> testUnclosedMath [
 ]
 
 { #category : #'tests - formats' }
-MicInlineSplitterTest >> testUnclosedStrike [
+MicInlineParserTest >> testUnclosedStrike [
 
 	| res |
 	res := self splitter parse: 'abc~strikeédef'.
@@ -583,7 +613,7 @@ MicInlineSplitterTest >> testUnclosedStrike [
 ]
 
 { #category : #'tests - url' }
-MicInlineSplitterTest >> testUrlObjectInUrlBlocks [
+MicInlineParserTest >> testUrlObjectInUrlBlocks [
 
 	| res |
 	res := self splitter parse: 'abc[test](myURL)last'.
@@ -592,7 +622,7 @@ MicInlineSplitterTest >> testUrlObjectInUrlBlocks [
 ]
 
 { #category : #'tests to make green again' }
-MicInlineSplitterTest >> testUrlObjectInUrlBlocks2 [
+MicInlineParserTest >> testUrlObjectInUrlBlocks2 [
 
 	| res |
 	res := self splitter parse:
@@ -600,4 +630,21 @@ MicInlineSplitterTest >> testUrlObjectInUrlBlocks2 [
 	self assert: res second url class equals: ZnUrl.
 	self flag: #tofix. "substring just returns pulse???"
 	self assert: res second url segments first equals: 'Ducasse'
+]
+
+{ #category : #tests }
+MicInlineParserTest >> testWrappedElementOnBold [
+	| mic |
+	mic := (self splitter parse: '**bold**') first.
+	self assert: mic class equals: MicBoldFormatBlock.
+	self assert: mic substring equals: 'bold'
+]
+
+{ #category : #tests }
+MicInlineParserTest >> testWrappedElementOnNested [
+	| mic |
+	mic := (self splitter parse: '**_italic_**') first.
+	self assert: mic wrappedElements first class equals: MicItalicFormatBlock.
+	self assert: mic wrappedElements first substring equals: 'italic'.
+	self flag: #fixeMe. "should check that we do not have empty mictext"
 ]

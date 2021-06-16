@@ -18,7 +18,6 @@ Class {
 	#superclass : #MicAbstractMicrodownTextualBuilder,
 	#instVars : [
 		'prefixStack',
-		'i',
 		'currentLevel'
 	],
 	#category : #'Microdown-Parser'
@@ -64,20 +63,20 @@ MicMicrodownTextualBuilder >> annotatedAnnotation: annotation [
 ]
 
 { #category : #'element - annotated' }
-MicMicrodownTextualBuilder >> annotation: aString arguments: associationCollection [
+MicMicrodownTextualBuilder >> annotation: aString arguments: aDictionary [
 
 	self raw: MicAnnotationOpenerDelimiter markup.
 	self space.
 	self raw: aString.
-	associationCollection ifNotEmpty: [ self raw: '|'.
-		associationCollection 
-			do: [ :each | 
-				self raw: each key.
+	aDictionary ifNotEmpty: [ self raw: ' | '.
+		aDictionary 
+			keysAndValuesDo: [ :key :value | 
+				self raw: key.
 				self raw: '='.
-				self raw: each value ]
-			separatedBy: [ self raw: '&' ]			
+				self raw: value.
+				key = aDictionary keys last
+					ifFalse: [ self raw: '&' ]	]	
 		 ].
-	self space.
 	self raw: MicAnnotationCloserDelimiter markup.
 ]
 
@@ -99,7 +98,7 @@ MicMicrodownTextualBuilder >> codeblock: aString firstLineAssociations: aCol [
 	aCol do: [ :each | self 
 						raw: each key;
 						raw: '=';
-						raw: each value value 
+						raw: each value value asString
 						"so that we can put format such as bold in the value"]
 			separatedBy: [ self raw: '&' ].
 	self newLine.
@@ -202,7 +201,10 @@ MicMicrodownTextualBuilder >> figureURL: aUrl withCaption: aDescriptionBlock wit
 		ifNotEmpty: [ 
 			self rawFigureDescription: aDescriptionBlock.
 			self raw: parserClass urlOpenerMarkup.
-			self raw: aUrl asString.
+			aUrl scheme ifNotNil: [ :sch | self raw: sch asString, '://' ].
+			aUrl authority ifNotNil: [ :auth | self raw: auth asString ].
+			self raw: '/'.
+			aUrl segments ifNotNil: [:segs | segs do: [:each | self raw: each asString]].
 			self raw: parserClass argumentListOfFigureStartDelimiter.
 			self rawParameters: anOrderedDictionary.
 			self raw: parserClass urlCloserMarkup ]

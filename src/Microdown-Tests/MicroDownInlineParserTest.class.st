@@ -51,8 +51,7 @@ MicrodownInlineParserTest >> rawTestingFor: aString [
 { #category : #'tests - format' }
 MicrodownInlineParserTest >> testAPIToAccessChildrenOfNestedElements [
 
- 	| elements bold italic |
-	self skip.
+ 	| elements bold |
  	elements := self parseAndReturnElementsOfParagraphFor: 'abc**_italicAndBold_ boldOnly**def'.
  	self assert: elements size equals: 3.
 
@@ -61,9 +60,12 @@ MicrodownInlineParserTest >> testAPIToAccessChildrenOfNestedElements [
 	self assert: elements first text equals: 'abc'.
 	
 	bold := elements second.
-	self assert: bold elements size equals: 2.
-	self assert: bold elements second text equals: ' boldOnly'
-	
+	self assert: bold class equals: MicBoldFormatBlock.
+	self assert: bold children size equals: 2.
+	self assert: bold children first class equals: MicItalicFormatBlock.
+	self assert: bold children first children first class equals: MicTextBlock.
+	self assert: bold children second text equals: ' boldOnly'.
+	self assert: bold children second class equals: MicTextBlock.
 ]
 
 { #category : #'tests - anchors' }
@@ -86,17 +88,15 @@ MicrodownInlineParserTest >> testAnchorRefernce [
  	self assert: elements second closingDelimiter equals: '@*'
 ]
 
-{ #category : #'tests to make green' }
+{ #category : #'tests - annotations' }
 MicrodownInlineParserTest >> testAnnotationBasic [
  	| elements annotation |
-	self skip.
  	elements := self parseAndReturnElementsOfParagraphFor: 'needed <?footnote | value=A foonote is annotation.?>'.
 	"pay attention an annotation is inside a paragraph (else this is an environment)"
 	annotation := elements second.
 	
  	self assert: annotation substring equals: 'footnote | value=A foonote is annotation.'.
 	
-	self halt.
  	self assert: annotation kind equals: 'annotation'.
  	self assert: annotation openingDelimiter equals: '<?'.
  	self assert: annotation closingDelimiter equals: '?>'
@@ -142,9 +142,12 @@ MicrodownInlineParserTest >> testBold [
  	elements := self parseAndReturnElementsOfParagraphFor: 'abc**bolds**def'.
  	self assert: elements size equals: 3.
  	self assert: elements first substring equals: 'abc'.
+	self assert: elements first class equals: MicTextBlock.
 	
  	self assert: elements second substring equals: 'bolds'.
+	self assert: elements second class equals: MicBoldFormatBlock.
  	self assert: elements second kind equals: 'bold'.
+	self assert: elements second children first class equals: MicTextBlock.
 	
  	self assert: elements second openingDelimiter equals: '**'
  
@@ -171,13 +174,13 @@ MicrodownInlineParserTest >> testBoldsAndCorrectNestedItalics [
  
 ]
 
-{ #category : #'tests to make green' }
+{ #category : #'tests - format' }
 MicrodownInlineParserTest >> testBoldsAndNestedItalics [ 
  	| elements |
  	elements := (self parseAndReturnElementsOfParagraphFor: 'abc**_bolds_**def').
  	self assert: elements size equals: 3.
  	self assert: elements first substring equals: 'abc'.
- 	self assert: elements second text equals: '_bolds_'.
+ 	self assert: elements second substring equals: '_bolds_'.
  	self assert: elements second kind equals: 'bold'.
  	self assert: elements second openingDelimiter equals: '**'
  
@@ -218,28 +221,44 @@ MicrodownInlineParserTest >> testEscape [
  
 ]
 
+{ #category : #tests }
+MicrodownInlineParserTest >> testEscapeAsLastCharacterDoesNotBreak [
+	
+	| elts  |
+	elts  := self parseAndReturnElementsOfParagraphFor:  'ch\'.
+	self assert: elts size equals: 1.
+	self assert: elts first class  equals: MicTextBlock.
+	self assert: elts first substring  equals: 'ch\'.
+	
+	elts  := self parseAndReturnElementsOfParagraphFor:  'ch\\'.
+	self assert: elts size equals: 1.
+	self assert: elts first class  equals: MicTextBlock.
+	self assert: elts first substring  equals: 'ch\\'.
+	
+	elts  := self parseAndReturnElementsOfParagraphFor:  'ch\a'.
+	self assert: elts size equals: 1.
+	self assert: elts first class  equals: MicTextBlock.
+	self assert: elts first substring  equals: 'cha'.
+]
+
 { #category : #'tests - figure' }
 MicrodownInlineParserTest >> testFigure [
  	| elements |
- 	elements := self parseAndReturnElementsOfParagraphFor: 'abc![caption](url?parameters=value)def'.
+ 	elements := self parseAndReturnElementsOfParagraphFor: 'abc![caption](http://www.pharo.org?parameters=value)def'.
  	self assert: elements size equals: 3.
  	self assert: elements first substring equals: 'abc'.
  	self assert: elements second caption equals: 'caption'.
  	self assert: elements second kind equals: 'figure'.
-	
-	self flag: #tofix.
-	"the path should be correctly managed."
-	
  	self assert: elements second openingDelimiter equals: '!['.
  	self assert: elements second closingDelimiter equals: ')'
 ]
 
-{ #category : #'tests to make green' }
+{ #category : #'tests - figure' }
 MicrodownInlineParserTest >> testFigureWithParameters [
 
 	| elements figure |
 	elements := self parseAndReturnElementsOfParagraphFor:
-		            '![caption terminating with a .](http://www.pharo.org/pharoLogo.png?label=fig2&width=80)'.
+		            '![caption terminating with a .](http://www.pharo.org/pharoLogo.png?micAnchor=fig2&micWidth=80)'.
 	self assert: elements size equals: 1.
 	figure := elements first.
 	self assert: figure caption equals: 'caption terminating with a .'.
@@ -258,13 +277,13 @@ MicrodownInlineParserTest >> testItalic [
  	self assert: elements second openingDelimiter equals: '_'
 ]
 
-{ #category : #'tests to make green' }
+{ #category : #'tests - format' }
 MicrodownInlineParserTest >> testItalicsAndNestedBolds [
  	| elements |
  	elements := (self parseAndReturnElementsOfParagraphFor: 'abc_**italics**_def').
  	self assert: elements size equals: 3.
  	self assert: elements first substring equals: 'abc'.
- 	self assert: elements second text equals: '**italics**'.
+ 	self assert: elements second substring equals: '**italics**'.
  	self assert: elements second kind equals: 'italic'.
  	self assert: elements second openingDelimiter equals: '_'
 ]
@@ -370,10 +389,17 @@ MicrodownInlineParserTest >> testRaws [
 	self rawTestingFor: 'anything'
 ]
 
-{ #category : #'tests to make green' }
+{ #category : #'tests - raw' }
 MicrodownInlineParserTest >> testRawsDoesNotHandleWellCurly [
-	self skip.
-	self rawTestingFor: 'anything}'.
+	| elements |
+ 	elements := self parseAndReturnElementsOfParagraphFor: 'abc{{', 'anything}', '}}def'.
+ 	self assert: elements size equals: 3.
+ 	self assert: elements first substring equals: 'abc'.
+ 	self assert: elements second substring equals: 'anything'.
+	self assert: elements third substring equals: '}def'.
+ 	self assert: elements second kind equals: 'raw'.
+ 	self assert: elements second openingDelimiter equals: '{{'.
+ 	self assert: elements second closingDelimiter equals: '}}'
 	
 ]
 
@@ -473,9 +499,14 @@ MicrodownInlineParserTest >> testStructureOfBoldNestedText [
 
  	| element |
  	element := (self parseAndReturnElementsOfParagraphFor: '**_abc_def**') first.
-	self assert: element text equals: '_abc_def'.
-	self assert: element children first text equals: 'abc'.
-	self assert: element children second text equals: 'def'.
+	self assert: element class equals: MicBoldFormatBlock.
+	self assert: element substring equals: '_abc_def'.
+	self assert: element children first substring equals: 'abc'.
+	self assert: element children first class equals: MicItalicFormatBlock.
+	self assert: element children second substring equals: 'def'.
+	self assert: element children second class equals: MicTextBlock.
+	self assert: element children first children first class equals: MicTextBlock.
+	
 	
 ]
 
@@ -484,8 +515,10 @@ MicrodownInlineParserTest >> testStructureOfBoldSimpleText [
 
  	| element |
  	element := (self parseAndReturnElementsOfParagraphFor: '**abc def**') first.
-	self assert: element text equals: 'abc def'.
-	self assert: element children equals: #()
+	self assert: element class equals: MicBoldFormatBlock.
+	self assert: element substring equals: 'abc def'.
+	self assert: element children size equals: 1.
+	self assert: element children first class equals: MicTextBlock.
 	
 ]
 
@@ -495,5 +528,6 @@ MicrodownInlineParserTest >> testStructureOfPlainText [
  	| element |
  	element := (self parseAndReturnElementsOfParagraphFor: 'abc') first.
 	self assert: element text equals: 'abc'.
+	self assert: element class equals: MicTextBlock.
 	self assert: element children equals: #()
 ]

@@ -57,7 +57,7 @@ MicTextualMicrodownExporter >> visit: aMicElement [
 	^ stream contents
 ]
 
-{ #category : #'visit-block' }
+{ #category : #'visit - block' }
 MicTextualMicrodownExporter >> visitAnchor: anAnchor [
 	
 	builder anchor: anAnchor label
@@ -69,40 +69,49 @@ MicTextualMicrodownExporter >> visitAnchorReference: anAnchorReference [
 	builder anchorReference: anAnchorReference substring
 ]
 
-{ #category : #'visit-block' }
+{ #category : #'visit - block' }
 MicTextualMicrodownExporter >> visitAnnotated: anAnnotated [
 
 	builder 
-		annotated: anAnnotated label paragraph:  [ anAnnotated body do: [ :each | each accept: self ] ] 
+		annotated: anAnnotated label 
+		paragraph:  [ super visitAnnotated: anAnnotated  ] 
+]
+
+{ #category : #'visit - format' }
+MicTextualMicrodownExporter >> visitAnnotation: anAnnotation [
+
+	builder annotation: anAnnotation name arguments: anAnnotation arguments
 ]
 
 { #category : #'visit - format' }
 MicTextualMicrodownExporter >> visitBold: aBoldFormat [
 
-	builder bold: [ aBoldFormat children do: [ :each | each accept: self ].
-		aBoldFormat children ifEmpty: [builder text: aBoldFormat substring] ]
+	builder bold: [ super visitBold: aBoldFormat ]
 ]
 
-{ #category : #visiting }
+{ #category : #'visit - block' }
 MicTextualMicrodownExporter >> visitCode: aMicCodeBlock [ 
 
 	 builder
 		  codeblock: aMicCodeBlock body
 		  firstLineAssociations: aMicCodeBlock argumentAssociations
-		  withCaption: [ aMicCodeBlock captionElements do: [ :each |each accept: self ] ]
+		  withCaption: [ super visitCode: aMicCodeBlock ]
 
 ]
 
-{ #category : #'visit-block' }
+{ #category : #'visit - block' }
 MicTextualMicrodownExporter >> visitComment: aComment [
 
 	builder comment: aComment text
 ]
 
-{ #category : #'visit-block' }
+{ #category : #'visit - block' }
 MicTextualMicrodownExporter >> visitEnvironment: anEnvironment [
 
-	builder environment: anEnvironment name body: [ :b | anEnvironment bodyElements do: [ :each | each accept: self ] ] arguments: anEnvironment arguments
+	builder 
+		environment: anEnvironment name 
+		body: [ :b | super visitEnvironment: anEnvironment ] 
+		arguments: anEnvironment arguments
 ]
 
 { #category : #'visit - format' }
@@ -110,50 +119,51 @@ MicTextualMicrodownExporter >> visitFigure: aFigure [
 	
 	builder
 		figureURL: aFigure url
-		withCaption: [ aFigure captionElements do: [:each | each accept: self ]]
+		withCaption: [ super visitFigure: aFigure ]
 		
 ]
 
-{ #category : #'visit-block' }
+{ #category : #'visit - block' }
 MicTextualMicrodownExporter >> visitHeader: aHeader [
-
+	"self halt."
 	builder 
 		header: [:b | aHeader headerElements do: [ :each | each accept: self ] ] 
 		withLevel: aHeader level
 ]
 
-{ #category : #'visit-block' }
+{ #category : #'visit - block' }
 MicTextualMicrodownExporter >> visitHorizontalLine: aHorizontalLine [
 
 	builder horizontalLine
 ]
 
 { #category : #'visit - format' }
-MicTextualMicrodownExporter >> visitItalic: aMicItalicFormatBlock [
-	
-	builder italic: [aMicItalicFormatBlock children do: [:each |each accept: self].
-		aMicItalicFormatBlock children ifEmpty: [builder text: aMicItalicFormatBlock substring]]
+MicTextualMicrodownExporter >> visitItalic: anItalicFormatBlock [
+
+	builder italic: [ super visitItalic: anItalicFormatBlock ]
 ]
 
 { #category : #'visit - format' }
 MicTextualMicrodownExporter >> visitLink: aLink [
 
-	builder externalLink: aLink url withDescription: [ aLink children do: [ :each | each accept: self ].
-		aLink children ifEmpty: [builder text: aLink substring] ]
+	builder 
+		externalLink: aLink url 
+		withDescription: [ super visitLink: aLink ]
 ]
 
-{ #category : #'visit-block' }
+{ #category : #'visit - block' }
 MicTextualMicrodownExporter >> visitListItem: anItem [
 
-	builder item: [ anItem textElements do: [ :each |each accept: self ] ]
+	builder item: [ super visitListItem: anItem ]
 ]
 
-{ #category : #visiting }
+{ #category : #'visit - block' }
 MicTextualMicrodownExporter >> visitMath: aMicMath [
+
 	 builder
 		  mathblock: aMicMath body
 		  firstLineAssociations: aMicMath argumentAssociations
-		  withCaption: [ aMicMath captionElements do: [ :each |each accept: self ] ]
+		  withCaption: [ super visitMath: aMicMath ]
 
 ]
 
@@ -163,34 +173,34 @@ MicTextualMicrodownExporter >> visitMathInline: aMicMathInline [
 	builder mathInline: aMicMathInline substring
 ]
 
-{ #category : #'visit-block' }
+{ #category : #'visit - block' }
 MicTextualMicrodownExporter >> visitMetaData: aMetaData [
+
 	builder metaDataFromAssociations: aMetaData body
 ]
 
 { #category : #'visit - format' }
 MicTextualMicrodownExporter >> visitMonospace: aMonospaceFormat [
 
-	builder monospace: [ aMonospaceFormat  children do: [ :each | each accept: self ].
-		aMonospaceFormat children ifEmpty: [builder text: aMonospaceFormat substring]]
+	builder monospace: [ super visitMonospace: aMonospaceFormat ]
 ]
 
-{ #category : #'visit-block' }
+{ #category : #'visit - block' }
 MicTextualMicrodownExporter >> visitOrderedList: anOrderedList [
 
-	builder unorderedListDuring: [ anOrderedList children do: [ :each |self visitOrderedListItem: each ] ]
+	builder unorderedListDuring: [ super visitOrderedList: anOrderedList ]
 ]
 
-{ #category : #'visit-block' }
+{ #category : #'visit - block' }
 MicTextualMicrodownExporter >> visitOrderedListItem: anItem [
 
-	builder orderedItem: [ anItem textElements do: [ :each |each accept: self ] ]
+	builder orderedItem: [ super visitOrderedListItem: anItem ]
 ]
 
-{ #category : #'visit-block' }
+{ #category : #'visit - block' }
 MicTextualMicrodownExporter >> visitParagraph: aParagraph [
 	builder 
-		paragraph: [ aParagraph children do: [:each |each accept: self]]
+		paragraph: [ super visitParagraph: aParagraph ]
 ]
 
 { #category : #'visit - format' }
@@ -205,28 +215,27 @@ MicTextualMicrodownExporter >> visitRaw: aRawFormat [
 	builder rawFormat: aRawFormat substring
 ]
 
-{ #category : #'visit-block' }
+{ #category : #'visit - block' }
 MicTextualMicrodownExporter >> visitRoot: aRoot [
 
 	builder 
-		root: [ aRoot children do: [ :each | each accept: self ] ] 
+		root: [ super visitRoot: aRoot ] 
 ]
 
 { #category : #'visit - format' }
 MicTextualMicrodownExporter >> visitStrike: aStrikeFormat [
 
-	builder strike: [ aStrikeFormat children do: [ :each | each accept: self ].
-		aStrikeFormat children ifEmpty: [builder text: aStrikeFormat substring]]
+	builder strike: [ super visitStrike: aStrikeFormat ]
 ]
 
-{ #category : #'visit - format' }
+{ #category : #'visit - block' }
 MicTextualMicrodownExporter >> visitText: aMicTextBlock [
 
 	builder text: aMicTextBlock substring
 ]
 
-{ #category : #'visit-block' }
+{ #category : #'visit - block' }
 MicTextualMicrodownExporter >> visitUnorderedList: aUnorderedList [
 
-	builder unorderedListDuring: [ aUnorderedList children do: [ :each |each accept: self ] ]
+	builder unorderedListDuring: [ super visitUnorderedList: aUnorderedList ]
 ]

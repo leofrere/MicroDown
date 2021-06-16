@@ -249,11 +249,6 @@ MicroDownParser class >> environmentOpeningBlockMarkup [
 	^ '<?'
 ]
 
-{ #category : #'inline block markups' }
-MicroDownParser class >> escapeMarkup [
-	^ self inlineMarkups at: #escapeCloser
-]
-
 { #category : #examples }
 MicroDownParser class >> example [
 	<sampleInstance>
@@ -655,7 +650,9 @@ MicroDownParser >> parse: aStreamOrString [
 	current := root := self newRootBlock
 		setParser: self;
 		yourself.
-	inStream := aStreamOrString readStream.
+	inStream := aStreamOrString isStream 
+		ifTrue:  [ aStreamOrString readStream ]
+		ifFalse: [  aStreamOrString asString readStream ].
 	[ line := inStream nextLine.
 	line isNil ] whileFalse: [ self handleLine: line ].
 	[ current = root ]

@@ -35,13 +35,15 @@ MicMicrodownSnippetFactory >> anchorWithSpaceInsideSample [
 
 { #category : #anchor }
 MicMicrodownSnippetFactory >> annotatedSample [
-	^ '!!label Foo
+	^ '!!label 
+Foo _bar_
 '
 ]
 
 { #category : #annotations }
 MicMicrodownSnippetFactory >> annotationSample [
-	^ 'abc<?Foo | value=aFoo&label=42?>def'
+	^ 'abc<? Foo | value=aFoo&label=42 ?>def
+'
 ]
 
 { #category : #format }
@@ -98,6 +100,11 @@ MicMicrodownSnippetFactory >> codeblockNoParamBody: body [
 { #category : #block }
 MicMicrodownSnippetFactory >> commentSample [
 	^ '% Foo'
+]
+
+{ #category : #utils }
+MicMicrodownSnippetFactory >> documentFrom: aString [
+	^ parserClass new parse: aString
 ]
 
 { #category : #anchor }
