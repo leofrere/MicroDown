@@ -378,7 +378,7 @@ arguments: '.
 { #category : #'visit-inline block' }
 MicDumper >> visitMathInline: aMicMathInline [
 
-	^ self blockPrint: aMicMathInline
+	self buildChildAndSubstring: aMicMathInline
 ]
 
 { #category : #'visit-block' }
