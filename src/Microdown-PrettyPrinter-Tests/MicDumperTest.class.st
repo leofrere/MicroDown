@@ -133,7 +133,19 @@ substring: ''Foo'')'.
 MicDumperTest >> testPrintMicAnnotated [
 	| micAnnotated |
 	micAnnotated := (parser parse: factory annotatedSample) children first.
-	self assert: (micAnnotated accept: visitor) equals: 'MicAnnotatedBlock'
+	self assert: (micAnnotated accept: visitor) contents equals: '(MicAnnotatedBlock new
+addBodyElement: (MicTextBlock new
+substring: ''
+Foo '';
+setParser: MicroDownParser new);
+addBodyElement: (MicItalicFormatBlock new
+addChild: (MicTextBlock new
+substring: ''bar'';
+setParser: MicroDownParser new);
+substring: ''bar'';
+setParser: MicroDownParser new);
+label: ''label'';
+setParser: MicroDownParser new)'
 ]
 
 { #category : #'tests-inline block' }
