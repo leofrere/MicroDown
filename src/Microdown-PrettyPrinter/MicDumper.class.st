@@ -97,8 +97,7 @@ MicDumper >> visitAnchor: aAnchor [
 	stream nextPutAll: '('.
 	aAnchor class printOn: stream.
 	stream nextPutAll: ' new
-'.
-	stream
+';
 		nextPutAll: 'label: ';
 		nextPutAll: (self surround: aAnchor label with: '''');
 		nextPutAll: ';
