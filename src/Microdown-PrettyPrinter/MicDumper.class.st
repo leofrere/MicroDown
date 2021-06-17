@@ -219,11 +219,26 @@ MicDumper >> visitComment: aComment [
 { #category : #'visit-block' }
 MicDumper >> visitEnvironment: aEnvironment [
 
-	| text |
-	text := (self classPrint: aEnvironment) , String space.
-	text := text , (self parametersPrint: aEnvironment arguments asDictionary).
-	text := text , ' "' , aEnvironment name , '"'.
-	^ text
+	stream nextPutAll: '('.
+	aEnvironment class printOn: stream.
+	aEnvironment bodyElements do: [ :each |
+	stream nextPutAll: 'addBodyElement: '.
+	each accept: self.
+	stream nextPutAll: ';
+' ].
+	stream nextPutAll: 'arguments: '.
+	self buildDictionnary: aEnvironment arguments.
+	stream nextPutAll: ';
+ firstLine: ';
+	nextPutAll: (self surround: aEnvironment firstLine with: '''');
+	nextPutAll: ';
+name:';
+	nextPutAll: (self surround: aEnvironment name with: '''');
+	nextPutAll: ';
+'.
+	self setParser.
+	stream nextPutAll: ')'
+	
 ]
 
 { #category : #'visit-inline block' }
