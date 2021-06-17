@@ -258,7 +258,13 @@ substring: ''Foo'')'.
 MicDumperTest >> testPrintOrderedList [
 	| micOrderedList |
 	micOrderedList := (parser parse: factory orderedListSample) children first.
-	self assert: (micOrderedList accept: visitor) equals: 'MicOrderedListBlock'
+	self assert: (micOrderedList accept: visitor) contents equals: '(MicOrderedListBlock new
+addChild: (MicListItemBlock new
+addChild: (MicTextBlock new
+substring: ''Foo'';
+setParser: MicroDownParser new);
+setParser: MicroDownParser new);
+setParser: MicroDownParser new)'
 ]
 
 { #category : #'tests-block' }
@@ -305,7 +311,13 @@ MicDumperTest >> testPrintTable [
 MicDumperTest >> testPrintUnorderedList [
 	| micUnorderedList |
 	micUnorderedList := (parser parse: factory unorderedListSample) children first.
-	self assert: (micUnorderedList accept: visitor) equals: 'MicUnorderedListBlock'
+	self assert: (micUnorderedList accept: visitor) contents equals: '(MicUnorderedListBlock new
+addChild: (MicListItemBlock new
+addChild: (MicTextBlock new
+substring: ''Foo'';
+setParser: MicroDownParser new);
+setParser: MicroDownParser new);
+setParser: MicroDownParser new)'
 ]
 
 { #category : #accessing }
