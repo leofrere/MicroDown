@@ -117,7 +117,8 @@ MicDumperTest >> testPrintMath [
 	self assert: (micMath  accept: visitor) contents equals: '(MicMathBlock new
 body: ''Foo'';
 firstLine: ''label=42'';
-arguments: {''label''->''42''} asDictionary)'
+arguments: {''label''->''42''} asDictionary;
+setParser: MicroDownParser new)'
 ]
 
 { #category : #'tests-block' }
@@ -126,7 +127,8 @@ MicDumperTest >> testPrintMetaData [
 	micMetaData := (parser parse: factory metaDataSample) children first.
 	self assert: (micMetaData accept: visitor) contents equals: '(MicMetaDataBlock new
 body: ''"author": "Foo"'';
-firstLine: '''')'
+firstLine: '''';
+setParser: MicroDownParser new)'
 ]
 
 { #category : #'tests-inline block' }
@@ -134,7 +136,8 @@ MicDumperTest >> testPrintMicAnchorReferenceBlock [
 	| micAnchorReference |
 	micAnchorReference := (parser parse: factory anchorReferenceSample) children first children first.
 	self assert: (micAnchorReference accept: visitor) contents equals: '(MicAnchorReferenceBlock new
-substring: ''Foo'')'.
+substring: ''Foo'';
+setParser: MicroDownParser new)'.
 
 
 ]
@@ -162,7 +165,11 @@ setParser: MicroDownParser new)'
 MicDumperTest >> testPrintMicAnnotationBlock [
 	| micAnnotation |
 	micAnnotation := (parser parse: factory annotationSample) children first children second.
-	self assert: (micAnnotation accept: visitor) equals: 'MicAnnotationBlock " Foo | value=aFoo&label=42 "'
+	self assert: (micAnnotation accept: visitor) contents equals: '(MicAnnotationBlock new
+substring: '' Foo | value=aFoo&label=42 '';
+name: ''Foo'';
+arguments: {#value->''aFoo'' . #label->''42 ''} asDictionary;
+setParser: MicroDownParser new)'
 ]
 
 { #category : #'tests-inline block' }
@@ -170,7 +177,11 @@ MicDumperTest >> testPrintMicBoldFormatBlock [
 	| micBold |
 	micBold := (parser parse: factory boldFormatSample) children first children first.
 	self assert: (micBold accept: visitor) contents equals: '(MicBoldFormatBlock new
-substring: ''Foo'')'
+addChild: (MicTextBlock new
+substring: ''Foo'';
+setParser: MicroDownParser new);
+substring: ''Foo'';
+setParser: MicroDownParser new)'
 
 ]
 
@@ -195,7 +206,11 @@ MicDumperTest >> testPrintMicItalicFormatBlock [
 	| micItalic |
 	micItalic := (parser parse: factory italicFormatSample) children first children first.
 	self assert: (micItalic accept: visitor) contents equals: '(MicItalicFormatBlock new
-substring: ''Foo'')'
+addChild: (MicTextBlock new
+substring: ''Foo'';
+setParser: MicroDownParser new);
+substring: ''Foo'';
+setParser: MicroDownParser new)'
 
 ]
 
@@ -226,7 +241,11 @@ MicDumperTest >> testPrintMicMonospaceFormatBlock [
 	| micMonospace |
 	micMonospace := (parser parse: factory monospaceFormatSample) children first children first.
 	self assert: (micMonospace accept: visitor) contents equals: '(MicMonospaceFormatBlock new
-substring: ''Foo'')'
+addChild: (MicTextBlock new
+substring: ''Foo'';
+setParser: MicroDownParser new);
+substring: ''Foo'';
+setParser: MicroDownParser new)'
 ]
 
 { #category : #'tests-inline block' }
@@ -234,7 +253,8 @@ MicDumperTest >> testPrintMicRawBlock [
 	| micRaw |
 	micRaw := (parser parse: factory rawFormatSample) children first children second.
 	self assert: (micRaw accept: visitor) contents equals: '(MicRawBlock new
-substring: ''Foo'')'
+substring: ''Foo'';
+setParser: MicroDownParser new)'
 ]
 
 { #category : #'tests-inline block' }
@@ -242,7 +262,11 @@ MicDumperTest >> testPrintMicStrikeFormatBlock [
 	| micStrike |
 	micStrike := (parser parse: factory strikethroughFormatSample) children first children first.
 	self assert: (micStrike accept: visitor)contents equals: '(MicStrikeFormatBlock new
-substring: ''Foo'')'
+addChild: (MicTextBlock new
+substring: ''Foo'';
+setParser: MicroDownParser new);
+substring: ''Foo'';
+setParser: MicroDownParser new)'
 ]
 
 { #category : #'tests-inline block' }
@@ -250,7 +274,8 @@ MicDumperTest >> testPrintMicTextBlock [
 	| micText |
 	micText := (parser parse: factory headerLevel3Sample) children first children first.
 	self assert: (micText accept: visitor) contents equals: '(MicTextBlock new
-substring: ''Foo'')'.
+substring: ''Foo'';
+setParser: MicroDownParser new)'.
 
 ]
 
@@ -273,8 +298,10 @@ MicDumperTest >> testPrintParagraph [
 	micParagraph := (parser parse: factory paragraphSample) children first.
 	self assert: (micParagraph accept: visitor) contents equals: '(MicParagraphBlock new
 addChild: (MicTextBlock new
-substring: ''Foo'');
-substring: ''Foo'')'
+substring: ''Foo'';
+setParser: MicroDownParser new);
+substring: ''Foo'';
+setParser: MicroDownParser new)'
 ]
 
 { #category : #'tests-block' }
@@ -282,7 +309,8 @@ MicDumperTest >> testPrintQuote [
 	| micQuote |
 	micQuote := (parser parse: factory quoteSample) children first.
 	self assert: (micQuote accept: visitor) contents equals: '(MicQuoteBlock new
-substring: ''Foo'')'
+substring: ''Foo'';
+setParser: MicroDownParser new)'
 ]
 
 { #category : #'tests-block' }
@@ -292,9 +320,12 @@ MicDumperTest >> testPrintRoot [
 	self assert: (micRoot accept: visitor) contents equals: '(MicRootBlock new
 addChild: (MicHeaderBlock new
 addChild: (MicTextBlock new
-substring: ''Foo'');
-level: 3);
-)'
+substring: ''Foo'';
+setParser: MicroDownParser new);
+level: 3;
+setParser: MicroDownParser new);
+;
+setParser: MicroDownParser new)'
 ]
 
 { #category : #'tests-block' }
