@@ -103,7 +103,11 @@ setParser: MicroDownParser new)'
 MicDumperTest >> testPrintListItem [
 	| micListItem |
 	micListItem := (parser parse: factory listMultiSample) children first children first.
-	self assert: (micListItem accept: visitor) equals: 'MicListItemBlock "1"'
+	self assert: (micListItem accept: visitor) contents equals: '(MicListItemBlock new
+addChild: (MicTextBlock new
+substring: ''1'';
+setParser: MicroDownParser new);
+setParser: MicroDownParser new)'
 ]
 
 { #category : #'tests-block' }
