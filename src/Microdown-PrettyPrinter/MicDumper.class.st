@@ -244,13 +244,27 @@ name:';
 { #category : #'visit-inline block' }
 MicDumper >> visitFigure: aMicFigure [
 
-	| text |
-	text := (self classPrint: aMicFigure) , String space.
-	text := text
-	        , (self parametersPrint: aMicFigure parameters asDictionary).
-	text := text , ' url:' , aMicFigure url asString.
-	text := text , ' "' , aMicFigure substring , '"'.
-	^ text
+	stream nextPutAll: '('.
+	aMicFigure class printOn: stream.
+	stream
+		nextPutAll: ' new;
+';
+		nextPutAll: 'parameters: '.
+	self buildDictionnary: aMicFigure arguments.
+	stream nextPutAll: ';
+'.
+	aMicFigure captionElements do: [ :each | 
+		stream nextPutAll: 'addCaptionElement: '.
+		each accept: self.
+		stream nextPutAll: ';
+' ].
+	stream nextPutAll: 'url: '''.
+	aMicFigure url printOn: stream.
+	stream
+		nextPutAll: ''';
+substring: ';
+		nextPutAll: (self surround: aMicFigure text with: '''');
+		nextPutAll: ')'
 ]
 
 { #category : #'visit-block' }
