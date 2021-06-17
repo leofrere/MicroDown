@@ -114,8 +114,23 @@ MicDumper >> visitAnchorReference: aMicAnchorReference [
 
 { #category : #'visit-block' }
 MicDumper >> visitAnnotated: aAnnotated [
-
-	^ self classPrint: aAnnotated
+	
+	stream nextPutAll: '('.
+	aAnnotated class printOn: stream.
+	stream nextPutAll: ' new
+'.
+	aAnnotated body do: [ :each | 
+		stream nextPutAll: 'addBodyElement: '.
+		each accept: self.
+		stream nextPutAll: ';
+' ].
+	stream
+		nextPutAll: 'label: ';
+		nextPutAll: (self surround: aAnnotated label with: '''');
+		nextPutAll: ';
+'.
+		self setParser.
+		stream nextPutAll: ')'
 ]
 
 { #category : #'visit-inline block' }
