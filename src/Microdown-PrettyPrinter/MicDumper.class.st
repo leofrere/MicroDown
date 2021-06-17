@@ -309,11 +309,23 @@ MicDumper >> visitItalic: aMicItalic [
 { #category : #'visit-inline block' }
 MicDumper >> visitLink: aMicLink [
 
-	| text |
-	text := self classPrint: aMicLink.
-	text := text , ' url:' , aMicLink url asString , ' "'
-	        , aMicLink substring , '"'.
-	^ text
+	stream nextPutAll: '('.
+	aMicLink class printOn: stream.
+	stream
+		nextPutAll: ' new;
+'.
+	aMicLink captionElements do: [ :each | 
+		stream nextPutAll: 'addCaptionElement: '.
+		each accept: self.
+		stream nextPutAll: ';
+' ].
+	stream nextPutAll: 'url: '''.
+	aMicLink url printOn: stream.
+	stream
+		nextPutAll: ''';
+substring: ';
+		nextPutAll: (self surround: aMicLink text with: '''');
+		nextPutAll: ')'
 ]
 
 { #category : #'visit-block' }
