@@ -414,7 +414,17 @@ MicDumper >> visitMonospace: aMicMonospace [
 { #category : #'visit-block' }
 MicDumper >> visitOrderedList: aOrderedList [
 
-	^ self classPrint: aOrderedList
+	stream nextPutAll: '('.
+	aOrderedList class printOn: stream.
+	stream nextPutAll: ' new
+'.
+	aOrderedList children do: [ :each | 
+		stream nextPutAll: 'addChild: '.
+		each accept: self.
+		stream nextPutAll: ';
+' ].
+	self setParser.
+	stream nextPutAll: ')'
 ]
 
 { #category : #'visit-block' }
@@ -491,5 +501,15 @@ MicDumper >> visitText: aMicText [
 { #category : #'visit-block' }
 MicDumper >> visitUnorderedList: aUnorderedList [
 
-	^ self classPrint: aUnorderedList
+	stream nextPutAll: '('.
+	aUnorderedList class printOn: stream.
+	stream nextPutAll: ' new
+'.
+	aUnorderedList children do: [ :each | 
+		stream nextPutAll: 'addChild: '.
+		each accept: self.
+		stream nextPutAll: ';
+' ].
+	self setParser.
+	stream nextPutAll: ')'
 ]
