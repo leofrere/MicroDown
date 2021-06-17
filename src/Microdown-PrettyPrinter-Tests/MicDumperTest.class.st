@@ -199,7 +199,12 @@ substring: ''Foo'')'
 MicDumperTest >> testPrintMicLinkBlock [
 	| micLink |
 	micLink := (parser parse: factory linkSample) children first children first.
-	self assert: (micLink accept: visitor) equals: 'MicLinkBlock url:/anUrl "Foo"'
+	self assert: (micLink accept: visitor) contents equals: '(MicLinkBlock new;
+addCaptionElement: (MicTextBlock new
+substring: ''Foo'';
+setParser: MicroDownParser new);
+url: ''/anUrl'';
+substring: ''Foo'')'
 
 ]
 
