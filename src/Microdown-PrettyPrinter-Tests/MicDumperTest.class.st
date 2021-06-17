@@ -173,11 +173,16 @@ substring: ''Foo'')'
 { #category : #'tests-inline block' }
 MicDumperTest >> testPrintMicFigureBlock [
 	| micFigure |
-	self skip.
 	micFigure := (parser parse: factory figureSample) children first children first.
 	self 
-		assert: (micFigure accept: visitor)  
-		equals: 	'MicFigureBlock parameters:label=figureTest&size=80 url:/anUrl "_Foo_"'
+		assert: (micFigure accept: visitor) contents
+		equals: 	'(MicFigureBlock new;
+parameters: {''label''->''figureTest'' . ''size''->''80''} asDictionary;
+addCaptionElement: (MicTextBlock new
+substring: ''Foo'';
+setParser: MicroDownParser new);
+url: ''/anUrl?label=figureTest&size=80'';
+substring: ''Foo'')'
 	
 ]
 
