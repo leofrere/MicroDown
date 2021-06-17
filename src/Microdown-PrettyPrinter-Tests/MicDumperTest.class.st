@@ -70,7 +70,13 @@ MicDumperTest >> testPrintEnvironment [
 	| micEnvironment |
 	self skip.
 	micEnvironment := (parser parse: factory environmentSample) children first.
-	self assert: (micEnvironment accept: visitor) equals: 'MicEnvironmentBlock parameters:value=aFoo&label=42 "Foo"'
+	self assert: (micEnvironment accept: visitor) contents equals: '(MicEnvironmentBlockaddBodyElement: (MicTextBlock new
+substring: ''Foo'';
+setParser: MicroDownParser new);
+arguments: {#value->''aFoo'' . #label->''42''} asDictionary;
+ firstLine: ''Foo|value=aFoo&label=42'';
+name:''Foo'';
+setParser: MicroDownParser new)'
 ]
 
 { #category : #'tests-block' }
