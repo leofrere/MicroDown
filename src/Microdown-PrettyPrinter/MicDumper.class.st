@@ -331,10 +331,22 @@ substring: ';
 { #category : #'visit-block' }
 MicDumper >> visitListItem: aListItem [
 
-	| text |
-	text := self classPrint: aListItem.
-	text := text , ' "' , aListItem text , '"'.
-	^ text
+	stream nextPutAll: '('.
+	aListItem class printOn: stream.
+	stream nextPutAll: ' new
+'.
+	aListItem children do: [ :each | 
+		stream nextPutAll: 'addChild: '.
+		each accept: self.
+		stream nextPutAll: ';
+' ].
+	aListItem textElements do: [ :each | 
+		stream nextPutAll: 'addChild: '.
+		each accept: self.
+		stream nextPutAll: ';
+' ].
+	self setParser.
+	stream nextPutAll: ')'
 ]
 
 { #category : #'visit-block' }
