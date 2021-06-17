@@ -216,7 +216,9 @@ substring: ''Foo'')'
 MicDumperTest >> testPrintMicMathInlineBlock [
 	| micMathInline |
 	micMathInline := (parser parse: factory mathInlineSample) children first children first.
-	self assert: (micMathInline accept: visitor) equals: 'MicMathInlineBlock "V_i = C_0 - C_3"'
+	self assert: (micMathInline accept: visitor) contents equals: '(MicMathInlineBlock new
+substring: ''V_i = C_0 - C_3'';
+setParser: MicroDownParser new)'
 ]
 
 { #category : #'tests-inline block' }
