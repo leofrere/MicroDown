@@ -1,27 +1,27 @@
 Class {
-	#name : #BCCodeSemanticActionTest,
+	#name : #MicCodeSemanticActionTest,
 	#superclass : #TestCase,
 	#instVars : [
 		'sample'
 	],
-	#category : #BeautifulComments
+	#category : #'Microdown-MicrodownRichTextComposer'
 }
 
 { #category : #'test - bogus entry' }
-BCCodeSemanticActionTest >> semanticActionClass [
+MicCodeSemanticActionTest >> semanticActionClass [
 
-	^ BCSemanticAction
+	^ MicSemanticAction
 ]
 
 { #category : #'test - bogus entry' }
-BCCodeSemanticActionTest >> testArrayShouldNotBreak [
+MicCodeSemanticActionTest >> testArrayShouldNotBreak [
 
 	self deny: (self semanticActionClass fromTokens: #( 1 #+ 2 #* 3 )) hasEntity.
 	self deny: (self semanticActionClass fromTokens: #( 1 #+ 2 #* )) hasEntity
 ]
 
 { #category : #'test - bogus entry' }
-BCCodeSemanticActionTest >> testChevronWithBrokenArguments [
+MicCodeSemanticActionTest >> testChevronWithBrokenArguments [
 
 	self assert: (self semanticActionClass fromTokens: #( Point #>> 2 )) entity isNil.
 	self assert: (self semanticActionClass fromTokens: #( Point class #>> 2 )) entity isNil.
@@ -31,7 +31,7 @@ BCCodeSemanticActionTest >> testChevronWithBrokenArguments [
 ]
 
 { #category : #'test - bogus entry' }
-BCCodeSemanticActionTest >> testChevronWithBrokenReceiver [
+MicCodeSemanticActionTest >> testChevronWithBrokenReceiver [
 
 	self assert: (self semanticActionClass fromTokens: #( 1 #>> 2 )) entity isNil.
 	self assert: (self semanticActionClass fromTokens: #( true #>> 2 )) entity isNil.
@@ -44,19 +44,19 @@ BCCodeSemanticActionTest >> testChevronWithBrokenReceiver [
 ]
 
 { #category : #'test - bogus entry' }
-BCCodeSemanticActionTest >> testDoubleDollars [
+MicCodeSemanticActionTest >> testDoubleDollars [
 
 	self deny: (self semanticActionClass from: '$$') hasEntity
 ]
 
 { #category : #'test - bogus entry' }
-BCCodeSemanticActionTest >> testEmptyString [
+MicCodeSemanticActionTest >> testEmptyString [
 
 	self deny: (self semanticActionClass from: '') hasEntity
 ]
 
 { #category : #'test - bogus entry' }
-BCCodeSemanticActionTest >> testGlobalAccess [
+MicCodeSemanticActionTest >> testGlobalAccess [
 
 	self assert: (self semanticActionClass fromTokens: #( Transcript )) hasEntity
 	"the semantics action is working even if it is refers to a global because the class of global is 
@@ -64,31 +64,31 @@ BCCodeSemanticActionTest >> testGlobalAccess [
 ]
 
 { #category : #'test - bogus entry' }
-BCCodeSemanticActionTest >> testMoreSpaces [
+MicCodeSemanticActionTest >> testMoreSpaces [
 
 	self deny: (self semanticActionClass from: '    ') hasEntity
 ]
 
 { #category : #'test - bogus entry' }
-BCCodeSemanticActionTest >> testOneSpace [
+MicCodeSemanticActionTest >> testOneSpace [
 
 	self deny: (self semanticActionClass from: ' ') hasEntity
 ]
 
 { #category : #'tests - metaclass' }
-BCCodeSemanticActionTest >> testReferenceToABrokenMetaClass [
+MicCodeSemanticActionTest >> testReferenceToABrokenMetaClass [
 
 	self assert: (self semanticActionClass from: 'Point2 class') entity isNil
 ]
 
 { #category : #'tests - metaclass' }
-BCCodeSemanticActionTest >> testReferenceToABrokenMetaClass2 [
+MicCodeSemanticActionTest >> testReferenceToABrokenMetaClass2 [
 
 	self assert: (self semanticActionClass from: 'Point grgrgr') entity isNil
 ]
 
 { #category : #'tests - class' }
-BCCodeSemanticActionTest >> testReferenceToAClass [
+MicCodeSemanticActionTest >> testReferenceToAClass [
 
 	self
 		assert: (self semanticActionClass from:  'Point') entity
@@ -96,7 +96,7 @@ BCCodeSemanticActionTest >> testReferenceToAClass [
 ]
 
 { #category : #'tests - metaclass' }
-BCCodeSemanticActionTest >> testReferenceToAMetaClass [
+MicCodeSemanticActionTest >> testReferenceToAMetaClass [
 
 	self
 		assert: (self semanticActionClass from: 'Point class') entity
@@ -104,7 +104,7 @@ BCCodeSemanticActionTest >> testReferenceToAMetaClass [
 ]
 
 { #category : #'tests - methods' }
-BCCodeSemanticActionTest >> testReferenceToAMethod [
+MicCodeSemanticActionTest >> testReferenceToAMethod [
 
 	self
 		assert: (self semanticActionClass from: 'Point >> #setX:setY:') entity name
@@ -112,45 +112,45 @@ BCCodeSemanticActionTest >> testReferenceToAMethod [
 ]
 
 { #category : #'tests - methods' }
-BCCodeSemanticActionTest >> testReferenceToANonExistingMethod [
+MicCodeSemanticActionTest >> testReferenceToANonExistingMethod [
 
 	self assert: (self semanticActionClass from: 'Point >> 12+3 ') entity isNil
 ]
 
 { #category : #'tests - methods' }
-BCCodeSemanticActionTest >> testReferenceToANonExistingMethodBecauseOfBogusClass [
+MicCodeSemanticActionTest >> testReferenceToANonExistingMethodBecauseOfBogusClass [
 
 	self assert: (self semanticActionClass from: 'Point222 >> #setX:setY:') entity isNil
 ]
 
 { #category : #'tests - methods' }
-BCCodeSemanticActionTest >> testReferenceToANonExistingMethodBecauseOfNoSymbol [
+MicCodeSemanticActionTest >> testReferenceToANonExistingMethodBecauseOfNoSymbol [
 
 	self assert: (self semanticActionClass from: 'Point >> setX:setY2:') entity isNil
 ]
 
 { #category : #'tests - package' }
-BCCodeSemanticActionTest >> testReferenceToANonExistingPackage [
+MicCodeSemanticActionTest >> testReferenceToANonExistingPackage [
 
 	self assert: (self semanticActionClass from: #Pillar) entity isNil
 ]
 
 { #category : #'tests - package' }
-BCCodeSemanticActionTest >> testReferenceToAPackage [
+MicCodeSemanticActionTest >> testReferenceToAPackage [
 
 	self
-		assert: (self semanticActionClass from: #'''BeautifulComments''') entity name
-		equals: 'BeautifulComments'
+		assert: (self semanticActionClass from: #'''Microdown''') entity name
+		equals: 'Microdown'
 ]
 
 { #category : #'tests - class' }
-BCCodeSemanticActionTest >> testReferenceToNonExistingClass [
+MicCodeSemanticActionTest >> testReferenceToNonExistingClass [
 
 	self deny: (self semanticActionClass from: 'Point22') hasEntity
 ]
 
 { #category : #'test - bogus entry' }
-BCCodeSemanticActionTest >> testTwoBogusElements [
+MicCodeSemanticActionTest >> testTwoBogusElements [
 
 	self assert:
 		(self semanticActionClass fromTokens: #( 1 #+ )) entity isNil.
@@ -161,7 +161,7 @@ BCCodeSemanticActionTest >> testTwoBogusElements [
 ]
 
 { #category : #'test - bogus entry' }
-BCCodeSemanticActionTest >> testTwoSpaces [
+MicCodeSemanticActionTest >> testTwoSpaces [
 
 	self deny: (self semanticActionClass from: '  ') hasEntity
 ]

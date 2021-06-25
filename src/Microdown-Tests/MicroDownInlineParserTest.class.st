@@ -88,7 +88,7 @@ MicrodownInlineParserTest >> testAnchorRefernce [
  	self assert: elements second closingDelimiter equals: '@*'
 ]
 
-{ #category : #'tests to make green' }
+{ #category : #'tests - annotations' }
 MicrodownInlineParserTest >> testAnnotationBasic [
  	| elements annotation |
  	elements := self parseAndReturnElementsOfParagraphFor: 'needed <?footnote | value=A foonote is annotation.?>'.
@@ -174,7 +174,7 @@ MicrodownInlineParserTest >> testBoldsAndCorrectNestedItalics [
  
 ]
 
-{ #category : #'tests to make green' }
+{ #category : #'tests - format' }
 MicrodownInlineParserTest >> testBoldsAndNestedItalics [ 
  	| elements |
  	elements := (self parseAndReturnElementsOfParagraphFor: 'abc**_bolds_**def').
@@ -221,28 +221,44 @@ MicrodownInlineParserTest >> testEscape [
  
 ]
 
+{ #category : #tests }
+MicrodownInlineParserTest >> testEscapeAsLastCharacterDoesNotBreak [
+	
+	| elts  |
+	elts  := self parseAndReturnElementsOfParagraphFor:  'ch\'.
+	self assert: elts size equals: 1.
+	self assert: elts first class  equals: MicTextBlock.
+	self assert: elts first substring  equals: 'ch\'.
+	
+	elts  := self parseAndReturnElementsOfParagraphFor:  'ch\\'.
+	self assert: elts size equals: 1.
+	self assert: elts first class  equals: MicTextBlock.
+	self assert: elts first substring  equals: 'ch\\'.
+	
+	elts  := self parseAndReturnElementsOfParagraphFor:  'ch\a'.
+	self assert: elts size equals: 1.
+	self assert: elts first class  equals: MicTextBlock.
+	self assert: elts first substring  equals: 'cha'.
+]
+
 { #category : #'tests - figure' }
 MicrodownInlineParserTest >> testFigure [
  	| elements |
- 	elements := self parseAndReturnElementsOfParagraphFor: 'abc![caption](url?parameters=value)def'.
+ 	elements := self parseAndReturnElementsOfParagraphFor: 'abc![caption](http://www.pharo.org?parameters=value)def'.
  	self assert: elements size equals: 3.
  	self assert: elements first substring equals: 'abc'.
  	self assert: elements second caption equals: 'caption'.
  	self assert: elements second kind equals: 'figure'.
-	
-	self flag: #tofix.
-	"the path should be correctly managed."
-	
  	self assert: elements second openingDelimiter equals: '!['.
  	self assert: elements second closingDelimiter equals: ')'
 ]
 
-{ #category : #'tests to make green' }
+{ #category : #'tests - figure' }
 MicrodownInlineParserTest >> testFigureWithParameters [
 
 	| elements figure |
 	elements := self parseAndReturnElementsOfParagraphFor:
-		            '![caption terminating with a .](http://www.pharo.org/pharoLogo.png?label=fig2&width=80)'.
+		            '![caption terminating with a .](http://www.pharo.org/pharoLogo.png?micAnchor=fig2&micWidth=80)'.
 	self assert: elements size equals: 1.
 	figure := elements first.
 	self assert: figure caption equals: 'caption terminating with a .'.
@@ -261,7 +277,7 @@ MicrodownInlineParserTest >> testItalic [
  	self assert: elements second openingDelimiter equals: '_'
 ]
 
-{ #category : #'tests to make green' }
+{ #category : #'tests - format' }
 MicrodownInlineParserTest >> testItalicsAndNestedBolds [
  	| elements |
  	elements := (self parseAndReturnElementsOfParagraphFor: 'abc_**italics**_def').
@@ -373,7 +389,7 @@ MicrodownInlineParserTest >> testRaws [
 	self rawTestingFor: 'anything'
 ]
 
-{ #category : #'tests to make green' }
+{ #category : #'tests - raw' }
 MicrodownInlineParserTest >> testRawsDoesNotHandleWellCurly [
 	| elements |
  	elements := self parseAndReturnElementsOfParagraphFor: 'abc{{', 'anything}', '}}def'.

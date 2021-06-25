@@ -83,6 +83,13 @@ MicInlineParserTest >> testBold [
 	self assert: res second kind equals: #bold
 ]
 
+{ #category : #tests }
+MicInlineParserTest >> testCurlyBraceDoesNotLeadToProblem [
+	| mic |
+	mic := (self splitter parse:  ' jhkjhk { a }') first.
+	self assert: mic substring equals:  ' jhkjhk { a }'
+]
+
 { #category : #'tests - escape' }
 MicInlineParserTest >> testEscapeCharacter [
 	"Test the escape \ in simple case (here, bold one)"
@@ -357,6 +364,14 @@ MicInlineParserTest >> testMonospace [
 ]
 
 { #category : #'tests - formats' }
+MicInlineParserTest >> testMonospaceDoesNotTreatNestedElements [
+
+	| res |
+	res := self splitter parse: '`[* foo *])`'.
+	self assert: res first substring equals: '[* foo *])'
+]
+
+{ #category : #'tests - formats' }
 MicInlineParserTest >> testMonospaceUnevaluated [
 	"When isEvaluated class method returns false, like monospace's case, inline inside shoudn't be evaluated"
 
@@ -419,6 +434,38 @@ MicInlineParserTest >> testParseEmptyText [
 	| res |
 	res := self splitter parse: ''.
 	self assert: res isEmpty
+]
+
+{ #category : #'tests - link' }
+MicInlineParserTest >> testParseMissingStartURL [
+	"Test the link annotation [LinkText]url)"
+
+	| res |
+	res := self splitter parse: '[Pharo is cool])'.
+	self assert: res first class = MicTextBlock.
+]
+
+{ #category : #'tests - link' }
+MicInlineParserTest >> testParseMissingStartURLInPresenceOfNestedFormat [
+	"Test the link annotation [LinkText]url) _*foo*_"
+
+	| res |
+	res := self splitter parse: '[LinkText]htt) 
+	_*foo*_'.
+	self assert: res first class = MicTextBlock.
+
+]
+
+{ #category : #'tests - link' }
+MicInlineParserTest >> testParseShitInMiddleURL [
+	"Test the link annotation [Pharo is cool]khkjhjkh klhkjhkh (http://pharo.org)"
+
+	| res |
+	res := self splitter parse:
+		       '[Pharo is cool]khkjhjkh klhkjhkh (http://pharo.org)'.
+
+	self assert: res first class = MicTextBlock.
+	self assert: res size equals: 1
 ]
 
 { #category : #'tests - raw' }

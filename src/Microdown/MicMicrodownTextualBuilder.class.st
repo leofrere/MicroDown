@@ -167,19 +167,20 @@ MicMicrodownTextualBuilder >> environment: aName body: aBodyBlock arguments: aCo
 	self raw: parserClass argumentListStartDelimiter.
 	self rawParameters: aCol asDictionary.
 	self newLine.
-	aBodyBlock value: self.
+	aBodyBlock value.
 	self newLine.
 	self raw: parserClass environmentClosingBlockMarkup
 ]
 
 { #category : #'element - references' }
 MicMicrodownTextualBuilder >> externalLink: aURL withDescription: aDescriptionBlock [
+
 	self raw: parserClass linkNameOpenerMarkup .
 	aDescriptionBlock value.
 	self raw: parserClass linkNameCloserMarkup.
 	self raw: parserClass urlOpenerMarkup.
-			self raw: aURL asString.
-			self raw: parserClass urlCloserMarkup.
+	self raw: aURL asString.
+	self raw: parserClass urlCloserMarkup.
 ]
 
 { #category : #'element - figure' }
@@ -375,9 +376,11 @@ MicMicrodownTextualBuilder >> nextPutAllLines: aString [
 
 { #category : #'element - list' }
 MicMicrodownTextualBuilder >> orderedItem: aBlock [
-	self writeStartOfOrderedListIndex: 1.
+
+	self raw: (self startOfOrderedListForLevel: currentLevel).
 	aBlock value.
-	self newLine.
+	self potentialNewLine.
+	
 ]
 
 { #category : #'element - list' }
@@ -392,8 +395,9 @@ MicMicrodownTextualBuilder >> orderedItem: aBlock startingAt: aNumber [
 MicMicrodownTextualBuilder >> orderedListDuring: aBlockClosure [
 	"For list we do not emit empty line at the end because we do not want to force the creation of a paragraph 
 	in the middle of nested list. And from a builder point of view this is difficult to know it."
-	
+	currentLevel := currentLevel + 1.
 	aBlockClosure value.
+	currentLevel := currentLevel - 1.
 	"for now we do not care to generate 
 	1. 
 	2.
@@ -483,7 +487,7 @@ MicMicrodownTextualBuilder >> rawHeader: aBloc withLevel: anInteger [
 
 	self raw: (parserClass headerMarkup repeat: anInteger).
    self raw: String space.
-   aBloc value: self.
+   aBloc value
 	
 ]
 
@@ -519,6 +523,12 @@ MicMicrodownTextualBuilder >> rawParameters: aZnDictionary [
 MicMicrodownTextualBuilder >> root: aBlock [
 	
 	aBlock value
+]
+
+{ #category : #'element - list' }
+MicMicrodownTextualBuilder >> startOfOrderedListForLevel: aNumber [
+
+	^ ('  ' repeat: aNumber) ,'1', parserClass orderedListSemiMarkup
 ]
 
 { #category : #'element - list' }

@@ -3,7 +3,7 @@ I am a visitor that produces rich text (class Text) based on a pillar document m
 I am implemented using a canvas/brush pattern. The class offers multiple configurations: an offline mode, 
 a not rendering mode, and a not catching exceptions (to ease debugging).
 
-The main API is the method: `PRRichTextComposer class>>#renderComment:of:`.
+The main API is the method: `BCRichTextComposer class>>#renderComment:of:`.
 
 Web-based images or LaTeX rendering requires network access and are cached.
 
@@ -16,7 +16,7 @@ For the LaTeX rendering, internet connexion is required.
 You can also turn it off/on doing
 
 ```
-PRRichTextComposer putOffLine
+BCRichTextComposer putOffLine
 ```
 
 In addition, images fetched via http requests are cached to avoid multiple http requests.
@@ -40,8 +40,8 @@ Monospaced text (e.g., `Point`, `Point class`,  `Point>>#setX:setY:`, or `#'Pill
 
 "
 Class {
-	#name : #BCRichTextComposer,
-	#superclass : #PRVisitor,
+	#name : #MicRichTextComposer,
+	#superclass : #MicrodownVisitor,
 	#instVars : [
 		'canvas',
 		'monospaceBackgroundColor',
@@ -60,25 +60,14 @@ Class {
 		'OffLine',
 		'Stylers'
 	],
-	#category : #BeautifullComments
+	#classInstVars : [
+		'imageCache'
+	],
+	#category : #'Microdown-MicrodownRichTextComposer'
 }
 
 { #category : #private }
-BCRichTextComposer class >> browse: urlString [
-	"urlString is of the form: browse://Class or browse://Class>>#method"
-	"self browse: 'browse://Class'"
-	"self browse: 'browse://Point>>#x'"
-	| parts sem |
-	parts := urlString substrings: '/'.  
-	sem := PRSemanticAction from: parts second.
-	sem hasEntity 
-		ifTrue: [ sem entity browse ].
-	
-
-]
-
-{ #category : #private }
-BCRichTextComposer class >> bulletForLevel: level [
+MicRichTextComposer class >> bulletForLevel: level [
 	| kind |
 	kind := level % 2.
 	kind = 0
@@ -88,19 +77,19 @@ BCRichTextComposer class >> bulletForLevel: level [
 ]
 
 { #category : #'class initialization' }
-BCRichTextComposer class >> captureErrors [
+MicRichTextComposer class >> captureErrors [
 	
 	^ CaptureErrors
 ]
 
 { #category : #'class initialization' }
-BCRichTextComposer class >> captureErrors: aBoolean [
+MicRichTextComposer class >> captureErrors: aBoolean [
 	
 	CaptureErrors := aBoolean
 ]
 
-{ #category : #'styler - declaration' }
-BCRichTextComposer class >> codeStylerFor: aString [
+{ #category : #styler }
+MicRichTextComposer class >> codeStylerFor: aString [
 	<codeblockStylerFor: 'Smalltalk'>
 	
 	^SHRBTextStyler new 
@@ -109,7 +98,7 @@ BCRichTextComposer class >> codeStylerFor: aString [
 ]
 
 { #category : #private }
-BCRichTextComposer class >> computeHeaderFonts [
+MicRichTextComposer class >> computeHeaderFonts [
 	
 	HeaderFonts := Array new:  HeaderFontSizes size.
 	1 to: HeaderFontSizes size do: [ :index |
@@ -123,7 +112,7 @@ BCRichTextComposer class >> computeHeaderFonts [
 ]
 
 { #category : #private }
-BCRichTextComposer class >> counterFor: counter atLevel: level [
+MicRichTextComposer class >> counterFor: counter atLevel: level [
 	| kind |
 	kind := level % 3.
 	kind = 0
@@ -134,16 +123,139 @@ BCRichTextComposer class >> counterFor: counter atLevel: level [
 		ifTrue: [ ^ ($A asInteger + (counter - 1)) asCharacter asText , ')' ]
 ]
 
-{ #category : #'styler - declaration' }
-BCRichTextComposer class >> defaultStyler: aString [
+{ #category : #styler }
+MicRichTextComposer class >> defaultStyler: aString [
 	<codeblockStylerFor: 'default'>
 	"Pay attention without this one the logic can loop."
 	
 	^ self codeStylerFor: aString
 ]
 
-{ #category : #'styler - declaration' }
-BCRichTextComposer class >> expressionStylerFor: aString [
+{ #category : #examples }
+MicRichTextComposer class >> exampleMicrodown1 [
+	<example>
+	(self microdownAsRichText: '### First section
+and this is just **first** line 
+1. Line 1 More here More here `More here More here` More here More here More here More here More here More here
+   - Kasper tries the strange thing Kasper tries the strange thingKasper tries the strange thingKasper tries the strange thingKasper tries the strange thingKasper tries the strange thingKasper tries the strange thing
+   - And one more _silly_ thingie
+1. Line 2
+   - Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla
+   - Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla Bla
+1. Line 3') inspect
+]
+
+{ #category : #examples }
+MicRichTextComposer class >> exampleMicrodown11 [
+	<example>
+	(self microdownAsRichText:
+'### Latex mathematics 
+It is possible to render latex math via a web services. Future version will cache the resulting expressions. 
+
+$
+ \frac{C_1\cos(\theta_i+C_3)}{C_4+C_1\cos(\theta_i+C_2)}
+$
+
+Cool eh?
+') inspect
+]
+
+{ #category : #examples }
+MicRichTextComposer class >> exampleMicrodown3 [
+	<example>
+	(self microdownAsRichText:
+					'## Code Blocks
+this is just _first_ line
+
+```
+Metacello new
+   baseline: ''PillarRichTextExporter'';
+   repository: ''github://kasperosterbye/PillarRichTextRender'';
+   load.
+```') inspect
+
+
+]
+
+{ #category : #examples }
+MicRichTextComposer class >> exampleMicrodown4 [
+	<example>
+	(self microdownAsRichText:
+					'## Annotations
+this is just _first_ line
+
+!!todo remember to do annotations
+and this is the second line') inspect
+]
+
+{ #category : #examples }
+MicRichTextComposer class >> exampleMicrodown5 [
+	<example>
+	(self microdownAsRichText:
+					'### Links
+This is just first line with an inline web ref [Pharo](http://pharo.org/)
+
+[Click me to go to http://pharo.org](http://pharo.org/)
+
+Here are direct links to classes and method
+- `String`
+- `String>>#trim`
+
+And this is another line') inspect
+]
+
+{ #category : #examples }
+MicRichTextComposer class >> exampleMicrodown6 [
+	<example>
+	(self microdownAsRichText:
+					'### Figures
+This is just **first** line. Figures accessed via HTTP requests are cached for speed reasons. 
+At max you should get one request per picture.
+
+![A super nice Pharo logo.](https://files.pharo.org/media/logo/logo.png)
+
+And this is the last line') inspect
+]
+
+{ #category : #examples }
+MicRichTextComposer class >> exampleMicrodown7 [
+	<example>
+	(self microdownAsRichText:
+					'# First section
+
+1. `Point` should open a class browser on Point.
+2. `Point class` should open a class browser on Point.
+3. `Point >> setX:setY:` should open a browser on the correspoding method.
+4. `#''Pillar-ExporterRichText''` should open a browser on the package.
+5. But `Borrrrrken` does not display the same.
+') inspect
+]
+
+{ #category : #examples }
+MicRichTextComposer class >> exampleMicrodown8 [
+	<example>
+	(self microdownAsRichText:
+					'```language=PharoExpression
+1 + 2 * 3  
+```
+') inspect
+]
+
+{ #category : #examples }
+MicRichTextComposer class >> exampleMicrodown9 [
+	<example>
+	
+	(self microdownAsRichText: 
+'In future versions, we should introduce adapted colorizer for expressions and for method bodies.
+```language=PharoMethod
+foo: arg
+	^ arg + self
+```
+') inspect
+]
+
+{ #category : #styler }
+MicRichTextComposer class >> expressionStylerFor: aString [
 	<codeblockStylerFor: 'PharoExpression'>
 	
 	^SHRBTextStyler new 
@@ -152,34 +264,39 @@ BCRichTextComposer class >> expressionStylerFor: aString [
 ]
 
 { #category : #private }
-BCRichTextComposer class >> headerFontSizes: anArray [
+MicRichTextComposer class >> headerFontSizes: anArray [
 
 	HeaderFontSizes := anArray.
 	self computeHeaderFonts 
 ]
 
 { #category : #private }
-BCRichTextComposer class >> headerFonts: anArray [
+MicRichTextComposer class >> headerFonts: anArray [
 
 	HeaderFontSizes := anArray
 ]
 
 { #category : #private }
-BCRichTextComposer class >> headerLevelFont: level [
+MicRichTextComposer class >> headerLevelFont: level [
 	"I return a font annotation to be used with Attributes"
 
 	^ HeaderFonts at: level
 ]
 
 { #category : #'class initialization' }
-BCRichTextComposer class >> imageAt: urlString put: aForm [	
+MicRichTextComposer class >> imageAt: urlString put: aForm [	
 	"the cache contains results of for example ZnEasy getPng:, i.e., a form"
 	
 	ImageCache at: urlString put: aForm
 ]
 
+{ #category : #accessing }
+MicRichTextComposer class >> imageCache [
+	^ imageCache ifNil: [ imageCache := LRUCache new ]
+]
+
 { #category : #'class initialization' }
-BCRichTextComposer class >> initialize [ 
+MicRichTextComposer class >> initialize [ 
 	"self initialize"
 	self offline: false.
 	self notRendering: false.
@@ -190,7 +307,7 @@ BCRichTextComposer class >> initialize [
 ]
 
 { #category : #'class initialization' }
-BCRichTextComposer class >> initializeStylers [
+MicRichTextComposer class >> initializeStylers [
 	"self initializeStylers"
 	Stylers := Dictionary
 		newFromAssociations: ((PragmaCollector
@@ -198,16 +315,59 @@ BCRichTextComposer class >> initializeStylers [
 						collected collect: [ :p | p arguments first asLowercase-> p method ])
 ]
 
-{ #category : #stylers }
-BCRichTextComposer class >> languageStylerFor: aLanguage [
+{ #category : #styler }
+MicRichTextComposer class >> languageStylerFor: aLanguage [
 
 	^ Stylers
 		at: aLanguage asLowercase
 		ifAbsent: [ self languageStylerFor: 'default' ]
 ]
 
-{ #category : #'styler - declaration' }
-BCRichTextComposer class >> methodStylerFor: aString [
+{ #category : #examples }
+MicRichTextComposer class >> latexExample [
+	<example>
+	self flag: #todo. "to fix we should use a MicInlineMath... here"
+	(MicRichTextComposer new visit: 
+		(PRMathInTextAnnotation new 
+		add: (PRText new text:
+'V_i = C_0 - C_3
+\frac{C_1\cos(\theta_i+C_3)}{C_4+C_1\cos(\theta_i+C_2)}')))
+
+ inspect
+]
+
+{ #category : #styler }
+MicRichTextComposer class >> latexMathStylerFor: aString [
+	"<codeblockStylerFor:'latexMath'>
+	
+	this is totally bogus: this method does not return a styler but just an image."
+	
+	| expressionUrl |
+	expressionUrl := 'https://latex.codecogs.com/png.latex?', aString urlEncoded.
+	^self loadExternalImageFromURL: expressionUrl errorText: 'Latex error'.
+]
+
+{ #category : #private }
+MicRichTextComposer class >> loadExternalImageFromURL: aUrl errorText: errorDesc [
+	"I return a Text instance with an loaded from a url"
+	
+	| anchoredImage |
+	self flag: #cleanAndRevisit.
+	"there is duplication in the visitFigure: method!!!"
+	anchoredImage := self imageCache 
+		at: aUrl 
+		ifAbsentPut: [ 
+			[ anchoredImage := (String value: 1) asText
+					addAttribute: (TextAnchor new anchoredMorph: (ZnEasy getPng: aUrl)).
+				anchoredImage ] 
+			on: Exception 
+			do: [ errorDesc asText addAttribute: TextColor red ]
+		].
+	^ anchoredImage 
+]
+
+{ #category : #styler }
+MicRichTextComposer class >> methodStylerFor: aString [
 	<codeblockStylerFor:'PharoMethod'>
 	
 	"when we use a pharo method for an expression the styler breaks for method pattern. So it should be fixed in the future but for now we make sure that at least it does not breaks."
@@ -216,33 +376,40 @@ BCRichTextComposer class >> methodStylerFor: aString [
 		styledTextFor: aString asText ] on: SubscriptOutOfBounds do: [ aString asText ]
 ]
 
+{ #category : #examples }
+MicRichTextComposer class >> microdownAsRichText: aString [
+	
+	^ self new visit: (MicroDownParser new parse: aString)
+
+]
+
 { #category : #'class initialization' }
-BCRichTextComposer class >> notRendering [
+MicRichTextComposer class >> notRendering [
 	"When notRendering, the comments are just displayed as plain text."
 	
 	^ NotRendering
 ]
 
 { #category : #'class initialization' }
-BCRichTextComposer class >> notRendering: aBoolean [
+MicRichTextComposer class >> notRendering: aBoolean [
 	NotRendering := aBoolean
 ]
 
 { #category : #'class initialization' }
-BCRichTextComposer class >> offline [
+MicRichTextComposer class >> offline [
 
 	^ OffLine
 ]
 
 { #category : #'class initialization' }
-BCRichTextComposer class >> offline: aBoolean [
+MicRichTextComposer class >> offline: aBoolean [
 
 	OffLine := aBoolean
 
 ]
 
 { #category : #settings }
-BCRichTextComposer class >> preferencesSettingsOn: aBuilder [
+MicRichTextComposer class >> preferencesSettingsOn: aBuilder [
 	<systemsettings>
 	(aBuilder group: #comments)
 		label: 'Comment rendering';  
@@ -250,15 +417,15 @@ BCRichTextComposer class >> preferencesSettingsOn: aBuilder [
 		description: 'All settings concerned with the notifications popup look''n feel';
 		with: [
 		(aBuilder setting: #offline)
-			label: 'To set offline mode';
+			label: 'To enable offline mode';
 			target: self;
 			default: false;
 			description: '
-			When oneline is chosen, requests to external images are only performed when they are not in the image cache (since requesting systematically HTTP may lead of latency. Each figure is cached, so the request is at most done one per external references. When the system is online but the request failed we return a placeholder that is not cached.
+			When online is chosen, requests to external images are only performed when they are not in the image cache (since requesting systematically HTTP may lead of latency. Each figure is cached, so the request is at most done one per external references. When the system is online but the request failed we return a placeholder that is not cached.
 			
 			When offline, requests to external images are not performed. The cache can be reset executing PRRichTextComposer resetCache. When the system is off line and an image is requested, a placeholder is computed but not put in the cache. This way when the system is put online the requested elements will be requested and put in the cache (without needing to flush placeholders from the cache).'. 
 			(aBuilder setting: #notRendering)
-				label: 'To set off the rendering in richtext';
+				label: 'To disable richtext rendering';
 				default: false;
 				target: self;
 				description: 'Comments are by default rendered via Pillar in Richtext. When this setting is on, they are rendered as plain text (showing their Microdown definitions).'. 
@@ -268,25 +435,25 @@ BCRichTextComposer class >> preferencesSettingsOn: aBuilder [
 ]
 
 { #category : #'class initialization' }
-BCRichTextComposer class >> putOffline [
+MicRichTextComposer class >> putOffline [
 
 	self offline: true
 ]
 
 { #category : #'class initialization' }
-BCRichTextComposer class >> putOnline [
+MicRichTextComposer class >> putOnline [
 
 	self offline: false
 ]
 
 { #category : #'class initialization' }
-BCRichTextComposer class >> resetCache [
+MicRichTextComposer class >> resetCache [
 
 	ImageCache := Dictionary new
 ]
 
-{ #category : #stylers }
-BCRichTextComposer class >> style: aString asLanguage: aLanguage [
+{ #category : #styler }
+MicRichTextComposer class >> style: aString asLanguage: aLanguage [
 	"render aString according to the styler named aLanguage"
 	
 	| styler |
@@ -296,40 +463,40 @@ BCRichTextComposer class >> style: aString asLanguage: aLanguage [
 		arguments: (Array with: aString)
 ]
 
-{ #category : #'styler - declaration' }
-BCRichTextComposer class >> textStyler: aString [
+{ #category : #styler }
+MicRichTextComposer class >> textStyler: aString [
 	<codeblockStylerFor: 'text'>
 	
 	^aString asText
 ]
 
 { #category : #accessing }
-BCRichTextComposer >> annotatedParagrapAlignment [
+MicRichTextComposer >> annotatedParagrapAlignment [
 	^ annotatedParagraphAlignment 
 ]
 
 { #category : #accessing }
-BCRichTextComposer >> annotatedParagraphAnnotationColor [
+MicRichTextComposer >> annotatedParagraphAnnotationColor [
 	^ annotatedParagraphAnnotationColor 
 ]
 
 { #category : #accessing }
-BCRichTextComposer >> annotatedParagraphAnnotationColor: aColor [
+MicRichTextComposer >> annotatedParagraphAnnotationColor: aColor [
 	annotatedParagraphAnnotationColor := aColor
 ]
 
 { #category : #accessing }
-BCRichTextComposer >> annotatedParagraphColor [
+MicRichTextComposer >> annotatedParagraphColor [
 	^ annotatedParagraphColor 
 ]
 
 { #category : #accessing }
-BCRichTextComposer >> annotatedParagraphColor: aColor [
+MicRichTextComposer >> annotatedParagraphColor: aColor [
 	annotatedParagraphColor := aColor
 ]
 
 { #category : #images }
-BCRichTextComposer >> cachedImageFromUrl: aUrl [
+MicRichTextComposer >> cachedImageFromUrl: aUrl [
 	
 	^ OffLine 
 		ifFalse: [
@@ -340,17 +507,17 @@ BCRichTextComposer >> cachedImageFromUrl: aUrl [
 ]
 
 { #category : #initialization }
-BCRichTextComposer >> defaultAnnotatedParagraphColor [
+MicRichTextComposer >> defaultAnnotatedParagraphColor [
 	^ TextColor blue
 ]
 
 { #category : #initialization }
-BCRichTextComposer >> defaultSuperscriptColor [
+MicRichTextComposer >> defaultSuperscriptColor [
 	^ TextColor blue
 ]
 
 { #category : #'images internal' }
-BCRichTextComposer >> imageOffLineFromUrl: aUrl [
+MicRichTextComposer >> imageOffLineFromUrl: aUrl [
 	"we are off but the image is there so we return it,"
 	^ ImageCache 
 			at: aUrl asString
@@ -361,7 +528,7 @@ When you will be online, you should see: ' , aUrl asString) imageForm  ]
 ]
 
 { #category : #'images internal' }
-BCRichTextComposer >> imageUnexpectedContentFromUrl: aUrl [
+MicRichTextComposer >> imageUnexpectedContentFromUrl: aUrl [
 	"The request got unexpected content if the image is there so we return it. We do not cache the failing case image form so that we do not polute the cache."
 	
 	^ ImageCache 
@@ -372,7 +539,7 @@ BCRichTextComposer >> imageUnexpectedContentFromUrl: aUrl [
 ]
 
 { #category : #initialization }
-BCRichTextComposer >> initialize [
+MicRichTextComposer >> initialize [
 	super initialize.
 	monospaceBackgroundColor := self theme settings windowColor.
 	superscriptColor := self defaultSuperscriptColor.
@@ -383,19 +550,19 @@ BCRichTextComposer >> initialize [
 ]
 
 { #category : #accessing }
-BCRichTextComposer >> monospaceBackgroundColor [
+MicRichTextComposer >> monospaceBackgroundColor [
 
 	^ monospaceBackgroundColor
 ]
 
 { #category : #accessing }
-BCRichTextComposer >> monospaceBackgroundColor: aColor [
+MicRichTextComposer >> monospaceBackgroundColor: aColor [
 
 	monospaceBackgroundColor := aColor
 ]
 
 { #category : #'images internal' }
-BCRichTextComposer >> rawImageFrom: aURL [
+MicRichTextComposer >> rawImageFrom: aURL [
 	| block |
 	self flag: #fixMeOnceNewExceptionIsAvailable.
 	block := [ ZnEasy getImageOfType: (ZnMimeType main: 'image' sub: '*') fromUrl: aURL ].
@@ -410,47 +577,46 @@ BCRichTextComposer >> rawImageFrom: aURL [
 		
 ]
 
-{ #category : #'visiting - document' }
-BCRichTextComposer >> renderMathExpression: aString [
+{ #category : #images }
+MicRichTextComposer >> renderMathExpression: aString [
 	
-	canvas << (BCCodeblockStylerExtensions latexMathStylerFor: aString)
-]
-
-{ #category : #visiting }
-BCRichTextComposer >> start: aDocument [
-	canvas := BCRichTextCanvas new.
-	self visit: aDocument.
-	^ canvas contents
+	canvas << (self class latexMathStylerFor: aString)
 ]
 
 { #category : #accessing }
-BCRichTextComposer >> subscriptColor [
+MicRichTextComposer >> subscriptColor [
 	^ subscriptColor 
 ]
 
 { #category : #accessing }
-BCRichTextComposer >> subscriptColor: anObject [
+MicRichTextComposer >> subscriptColor: anObject [
 	subscriptColor := anObject
 ]
 
 { #category : #accessing }
-BCRichTextComposer >> superscriptColor [
+MicRichTextComposer >> superscriptColor [
 	^ superscriptColor 
 ]
 
 { #category : #accessing }
-BCRichTextComposer >> superscriptColor: anObject [
+MicRichTextComposer >> superscriptColor: anObject [
 	superscriptColor := anObject
 ]
 
 { #category : #initialization }
-BCRichTextComposer >> theme [
+MicRichTextComposer >> theme [
 
 	^  Smalltalk ui theme
 ]
 
+{ #category : #accessing }
+MicRichTextComposer >> todo [ 
+	^ 'there is too much hspace after a section when it is followed by a paragraph. 
+This also because people will not want to to not let a newline between the header and paragraph when writing the text.'
+]
+
 { #category : #'images internal' }
-BCRichTextComposer >> unsuccessfulRequestFromUrl: aUrl [
+MicRichTextComposer >> unsuccessfulRequestFromUrl: aUrl [
 	
 	^ ImageCache 
 			at: aUrl asString
@@ -460,18 +626,16 @@ BCRichTextComposer >> unsuccessfulRequestFromUrl: aUrl [
 ]
 
 { #category : #visiting }
-BCRichTextComposer >> visit: anObject [
-	anObject accept: self
-]
-
-{ #category : #'visiting - unsupported' }
-BCRichTextComposer >> visitAnchor: anObject [
-	canvas << '>>> Anchors not supported in RichText Pillar <<<' asText
+MicRichTextComposer >> visit: aDocument [
+	
+	canvas := MicRichTextCanvas new.
+	super visit: aDocument.
+	^ canvas contents
 ]
 
 { #category : #'visiting - document' }
-BCRichTextComposer >> visitAnnotatedParagraph: anAnnotatedParagraph [
-	
+MicRichTextComposer >> visitAnnotatedParagraph: anAnnotatedParagraph [
+	self halt.
 	canvas newLineIfNotAlready.
 	canvas newLine.
 	canvas
@@ -488,104 +652,42 @@ BCRichTextComposer >> visitAnnotatedParagraph: anAnnotatedParagraph [
 	canvas newLine.
 ]
 
-{ #category : #'visiting - unsupported' }
-BCRichTextComposer >> visitAnnotation: anAnnotation [
-	canvas << '>>> Annotations not supported in RichText Pillar <<<' asText
-]
-
-{ #category : #'visiting - unsupported' }
-BCRichTextComposer >> visitBeginEnvironmentAnnotation: aBeginEnvironmentAnnotation [
-
-	canvas << '>>> Environments not supported in RichText Pillar <<<' asText
-]
-
 { #category : #'visiting -  format' }
-BCRichTextComposer >> visitBoldFormat: anObject [
+MicRichTextComposer >> visitBold: anObject [
 	canvas 
 		includeAttribute: TextEmphasis bold 
-		in: [self visitFormat: anObject]
+		in: [ super visitBold: anObject ]
 	
 ]
 
-{ #category : #'visiting - unsupported' }
-BCRichTextComposer >> visitCitation: aCitation [
-	canvas << '>>> Citations not supported in RichText Pillar <<<' asText
-]
-
-{ #category : #'visiting - unsupported' }
-BCRichTextComposer >> visitCitationAnnotation: aCitation [
-	canvas << '>>> Citations not supported in RichText Pillar <<<' asText
-]
-
 { #category : #'visiting - document' }
-BCRichTextComposer >> visitCodeblock: aCodeBlock [
+MicRichTextComposer >> visitCode: aCodeBlock [
+	
 	canvas newLineIfNotAlready.
 	canvas newLine.
 	canvas
 		indentIn: [  
+			aCodeBlock hasCaption 
+				ifTrue: [ 
+					canvas 
+					includeAttribute: TextEmphasis bold 
+					in: [ canvas  << aCodeBlock caption asText; newLine.
+							canvas <<  '------------------------------------------------------' asText; newLine ]].
 			canvas
 				indentIn: [ 
 					canvas << (self class  
-						style: aCodeBlock text 
-						asLanguage: aCodeBlock language originalName)
+						style: aCodeBlock body 
+						asLanguage: aCodeBlock firstTag)
 			] ].
+	canvas
+		indentIn: [  canvas newLine; <<  '------------------------------------------------------' asText].
 	canvas newLine.
 
 ]
 
-{ #category : #'visiting - unsupported' }
-BCRichTextComposer >> visitColumn: aColumn [
-	canvas << '>>> Columns not supported in RichText Pillar <<<' asText
-]
-
-{ #category : #'visiting - unsupported' }
-BCRichTextComposer >> visitColumnAnnotation: aColumnAnnotation [
-	canvas << '>>> Columns not supported in RichText Pillar <<<' asText
-]
-
-{ #category : #'visiting - unsupported' }
-BCRichTextComposer >> visitColumns: aColumns [
-	canvas << '>>> Columns not supported in RichText Pillar <<<' asText
-]
-
-{ #category : #'visiting - unsupported' }
-BCRichTextComposer >> visitColumnsAnnotation: aColumnsAnnotation [
-	canvas << '>>> Columns not supported in RichText Pillar <<<' asText
-]
-
-{ #category : #'visiting - list' }
-BCRichTextComposer >> visitDataItem: anItem [
-	canvas newLineIfNotAlready.
-	self visitDocumentGroup: anItem
-]
-
-{ #category : #'visiting - list' }
-BCRichTextComposer >> visitDefinitionList: anObject [
-	canvas indentIn: [ self visitUnorderedList: anObject ]
-]
-
-{ #category : #'visiting - unsupported' }
-BCRichTextComposer >> visitDocListAnnotation: aPRDocListAnnotation [
-	canvas << '>>> DocLists not supported in RichText Pillar <<<' asText
-]
-
 { #category : #'visiting - document' }
-BCRichTextComposer >> visitEmptyParagraph: anObject [
-	canvas newLine
-]
-
-{ #category : #'visiting - unsupported' }
-BCRichTextComposer >> visitEndColumnsAnnotation: aEndColumnsAnnotation [
-	canvas << '>>> Columns not supported in RichText Pillar <<<' asText
-]
-
-{ #category : #'visiting - unsupported' }
-BCRichTextComposer >> visitEndEnvironmentAnnotation: aEndEnvironmentAnnotation [
-	canvas << '>>> Environments not supported in RichText Pillar <<<' asText
-]
-
-{ #category : #'visiting - document' }
-BCRichTextComposer >> visitEnvironment: anObject [
+MicRichTextComposer >> visitEnvironment: anObject [
+	self halt.
 	self flag: #fixme.
 	"What is this textBlock idea? Clean!"
 	anObject name = 'textBlock'
@@ -599,81 +701,83 @@ BCRichTextComposer >> visitEnvironment: anObject [
 ]
 
 { #category : #'visiting - document' }
-BCRichTextComposer >> visitExternalLink: aLink [
-	| attribute target url |
-	target := aLink reference.
-	url := target asUrl.
-	attribute := nil.
-	(#(http https) includes: url scheme )
-		ifTrue: [ attribute := "PRExternalLinkTextAction url: target"
-			 	TextAction new actOnClickBlock: [WebBrowser openOn: target]].
-	url scheme = #browse
-		ifTrue:
-			[ attribute := TextAction new actOnClickBlock: [ self class browse: target ] ].
-	attribute
-		ifNotNil:
-			[ canvas includeAttribute: attribute in: [ self visitLink: aLink ] ]
-		ifNil: [ self visitLink: aLink ]
-]
-
-{ #category : #'visiting - document' }
-BCRichTextComposer >> visitFigure: aFigure [
-	| anchoredImage |
+MicRichTextComposer >> visitFigure: aFigure [
 	"Try to read a png file (only one supported right now), else use alt text"
+	| anchoredImage |
+
+	
 	
 	"for now I cancel the catching of all exceptions because it is a blackhole."
 	"[" 
 	anchoredImage := (String value: 1) asText
-		addAttribute: (TextAnchor new anchoredMorph: (self cachedImageFromUrl: aFigure reference)).
-		canvas << anchoredImage 
+		addAttribute: (TextAnchor new anchoredMorph: (self cachedImageFromUrl: aFigure url)).
+		canvas << anchoredImage.
+		canvas newLine.
+		canvas 
+			includeAttribute: TextEmphasis bold 
+			in: [ canvas tab; tab; tab; << aFigure caption asText ]
 		"] 
 		on: Exception  
 		do: [self visitAll: aFigure children]."
+	"pay attention url return the rest https://files.pharo.org/media/logo/logo.png%7Csize=80&caption=Our%20great%20figure so we will have to add a method to only return the url part."
 ]
 
 { #category : #'visiting - document' }
-BCRichTextComposer >> visitHeader: aHeader [
+MicRichTextComposer >> visitHeader: aHeader [
 
 	canvas newLineIfNotAlready.
 	canvas newLine.
 	canvas
 		includeAttribute: (self class headerLevelFont: aHeader level)
-		in: [ self visitDocumentGroup: aHeader ].
+		in: [ super visitHeader: aHeader ].
 	canvas newLine
 ]
 
 { #category : #'visiting - document' }
-BCRichTextComposer >> visitHorizontalRule: anHorizontalLine [
-
+MicRichTextComposer >> visitHorizontalLine: anHorizontalLine [
+	
 	canvas includeAttribute: TextEmphasis underlined in: [ canvas << ('     ' repeat: 20) asText ].
 	canvas newLine.	
 ]
 
 { #category : #'visiting -  format' }
-BCRichTextComposer >> visitItalicFormat: anObject [
-	canvas includeAttribute: TextEmphasis italic in: [ self visitFormat: anObject ]
+MicRichTextComposer >> visitItalic: anObject [
+	canvas 
+		includeAttribute: TextEmphasis italic 
+		in: [ super visitItalic: anObject ]
+]
+
+{ #category : #'visiting - document' }
+MicRichTextComposer >> visitLink: aLink [
+	| attribute |
+	attribute := nil.
+	(#(http https) includes: aLink url scheme )
+		ifTrue: [ attribute := TextAction new actOnClickBlock: [ WebBrowser openOn: aLink url printString ]].
+	attribute
+		ifNotNil:
+			[ canvas includeAttribute: attribute in: [ super visitLink: aLink ] ]
+		ifNil: [ super visitLink: aLink ]
 ]
 
 { #category : #'visiting - list' }
-BCRichTextComposer >> visitListItem: anItem [
+MicRichTextComposer >> visitListItem: anItem [
 	| bullet |
-	"I stored the counter and bullet type in `visitOrderedList` and `visitUnorderedList`"
+	"The depth counter and bullet type in `visitOrderedList` and `visitUnorderedList`"
 	bullet := (anItem propertyAt: #kind) = #ordered
 		ifTrue: [ (anItem propertyAt: #counter) asString asText , String tab ]
 		ifFalse: [ (anItem propertyAt: #bullet) asText , String tab ].
 	bullet addAttribute: (TextIndent tabs: canvas nesting - 1).
 	canvas newLineIfNotAlready.
 	canvas << bullet.
-	self visitDocumentGroup: anItem.
-	"canvas newLineIfNotAlready."
+	super visitListItem: anItem.
+
 ]
 
 { #category : #'visiting - document' }
-BCRichTextComposer >> visitMathEnvironment:  aPRMathEnvironment [
-	"we could plug some math rendering for Polymath following the implementation of Kasper.
-	See PRCodeblockStylerExtensions"
+MicRichTextComposer >> visitMath:  aMicMathEnvironment [
+
 	| text |
-	text := aPRMathEnvironment text. 
+	text := aMicMathEnvironment body. 
 	(OffLine | text isNil)
 		ifTrue: [ text 
 						ifNotNil: [ canvas << '&'; cr; << text; << '&']
@@ -684,17 +788,15 @@ BCRichTextComposer >> visitMathEnvironment:  aPRMathEnvironment [
 ]
 
 { #category : #'visiting - document' }
-BCRichTextComposer >> visitMathInTextAnnotation: aPRMathInTextAnnotation [ 
-	"we could plug some math rendering for Polymath following the implementation of Kasper.
-	See PRCodeblockStylerExtensions"
+MicRichTextComposer >> visitMathInline: aMicMathInline [ 
 	
 	OffLine 
-		ifTrue: [ canvas << '$', aPRMathInTextAnnotation text, '$' ]
-		ifFalse: [ canvas << (BCCodeblockStylerExtensions latexMathStylerFor: aPRMathInTextAnnotation text)]
+		ifTrue: [ canvas << '$', aMicMathInline text, '$' ]
+		ifFalse: [ canvas << (self class latexMathStylerFor: aMicMathInline text)]
 ]
 
 { #category : #'visiting -  format' }
-BCRichTextComposer >> visitMonospaceFormat: anObject [
+MicRichTextComposer >> visitMonospace: anObject [
 	"Notice - I add a highlight to the backgorund rather than mono-spaced."
 	| backgroundColor sem |
 	backgroundColor := self monospaceBackgroundColor.
@@ -704,16 +806,19 @@ BCRichTextComposer >> visitMonospaceFormat: anObject [
 	canvas 
 		includeAttribute: (TextBackgroundColor color: backgroundColor) 
 		in: [ 
-			sem := PRSemanticAction from: anObject text.
+			sem := MicSemanticAction from: anObject text.
 			sem hasEntity 
 				ifTrue: [ canvas 
-								includeAttribute: (TextAction new actOnClickBlock: [ sem entity browse ]) in: [self visitFormat: anObject ] ]
-				ifFalse: [ self visitFormat: anObject]].  
+								includeAttribute: (TextAction new actOnClickBlock: [ sem entity browse ]) 
+								in: [ super visitMonospace: anObject ] ]
+				ifFalse: [ super visitMonospace: anObject]].  
 ]
 
 { #category : #'visiting - list' }
-BCRichTextComposer >> visitOrderedList: anObject [
+MicRichTextComposer >> visitOrderedList: anObject [
+	"here we annotate items with their kind and the depth"
 	| counter |
+	canvas newLineIfNotAlready.
 	canvas indentIn: [counter := 1.
 		anObject children
 			do: [ :item | 
@@ -727,7 +832,8 @@ BCRichTextComposer >> visitOrderedList: anObject [
 ]
 
 { #category : #'visiting - document' }
-BCRichTextComposer >> visitParagraph: anObject [
+MicRichTextComposer >> visitParagraph: anObject [
+	
 	"canvas newLineIfNotAlready."
 	canvas newLine.
 	super visitParagraph: anObject.
@@ -735,72 +841,32 @@ BCRichTextComposer >> visitParagraph: anObject [
 ]
 
 { #category : #'visiting - document' }
-BCRichTextComposer >> visitParameters: anObject [
+MicRichTextComposer >> visitParameters: anObject [
 	"do nothing for now"
 	
 	^ self
 ]
 
-{ #category : #'visiting - document' }
-BCRichTextComposer >> visitPreformatted: aPreformatted [
+{ #category : #'visiting -  format' }
+MicRichTextComposer >> visitStrike: anObject [
 
+	canvas 
+		includeAttribute: TextEmphasis struckOut 
+		in: [ super visitStrike: anObject ]
+]
+
+{ #category : #'visiting -  format' }
+MicRichTextComposer >> visitText: anInlineBlock [
+	"we should set attribute because it would override link and others."
+	canvas << anInlineBlock substring asText
+]
+
+{ #category : #'visiting - list' }
+MicRichTextComposer >> visitUnorderedList: anObject [
 	canvas newLineIfNotAlready.
-	canvas newLine.
 	canvas
 		indentIn: [ 
-			aPreformatted children do: [ :each | 
-				canvas << (self class textStyler: each text).
-				canvas newLine ].
-			"This is not really correct since the text should be interpreted."
-			"canvas << (PRRichTextCodeblockStyler textStyler: aPreformatted text)"].
-		
-	canvas newLine
-]
-
-{ #category : #'visiting -  format' }
-BCRichTextComposer >> visitStrikethroughFormat: anObject [
-	canvas includeAttribute: TextEmphasis struckOut in: [ self visitFormat: anObject ]
-]
-
-{ #category : #'visiting -  format' }
-BCRichTextComposer >> visitSubscriptFormat: anObject [
-	canvas
-		includeAttribute: self subscriptColor
-		in: [ self visitFormat: anObject ]
-]
-
-{ #category : #'visiting -  format' }
-BCRichTextComposer >> visitSuperscriptFormat: anObject [
-	canvas
-		includeAttribute: self superscriptColor
-		in: [ self visitFormat: anObject ]
-]
-
-{ #category : #'visiting - list' }
-BCRichTextComposer >> visitTermItem: anItem [
-	canvas newLineIfNotAlready.
-	canvas
-		includeAttribute: (TextIndent tabs: canvas nesting - 1)
-		in: [ canvas
-				includeAttribute: TextEmphasis bold
-				in: [ self visitDocumentGroup: anItem ] ]
-]
-
-{ #category : #'visiting - document' }
-BCRichTextComposer >> visitText: anObject [
-	canvas << anObject text asText
-		" - should not be necessary addAttribute: (TextIndent tabs: canvas nesting)"
-]
-
-{ #category : #'visiting -  format' }
-BCRichTextComposer >> visitUnderlineFormat: anObject [
-	canvas includeAttribute: TextEmphasis underlined in: [ self visitFormat: anObject ]
-]
-
-{ #category : #'visiting - list' }
-BCRichTextComposer >> visitUnorderedList: anObject [
-	canvas
-		indentIn: [ anObject children
+			anObject children
 				do: [ :item | 
 					item propertyAt: #kind put: #unordered.
 					item

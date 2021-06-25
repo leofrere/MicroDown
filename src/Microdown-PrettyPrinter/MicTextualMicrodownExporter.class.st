@@ -3,7 +3,8 @@ Class {
 	#superclass : #MicrodownVisitor,
 	#instVars : [
 		'stream',
-		'builder'
+		'builder',
+		'inList'
 	],
 	#category : #'Microdown-PrettyPrinter'
 }
@@ -28,12 +29,20 @@ MicTextualMicrodownExporter >> contents [
 	^ stream contents
 ]
 
+{ #category : #accessing }
+MicTextualMicrodownExporter >> inList [
+	^ inList
+
+]
+
 { #category : #initialization }
 MicTextualMicrodownExporter >> initialize [ 
 	super initialize.
 	stream := (String new: 10000) writeStream.
 	builder := MicroDownParser builder.
 	builder setStream: stream.
+	builder setNewLineCharacterString: String cr.
+	inList := false
 ]
 
 { #category : #build }
@@ -48,6 +57,18 @@ MicTextualMicrodownExporter >> parametersPrint: aDictionnary [
 			ifFalse: [ 
 				text := text , '&' ]].
 	^ text
+]
+
+{ #category : #setting }
+MicTextualMicrodownExporter >> setFalseInList [
+	inList := false
+
+]
+
+{ #category : #setting }
+MicTextualMicrodownExporter >> setTrueInList [
+	inList := true
+
 ]
 
 { #category : #API }
@@ -92,6 +113,7 @@ MicTextualMicrodownExporter >> visitBold: aBoldFormat [
 { #category : #'visit - block' }
 MicTextualMicrodownExporter >> visitCode: aMicCodeBlock [ 
 
+	builder newLine.
 	 builder
 		  codeblock: aMicCodeBlock body
 		  firstLineAssociations: aMicCodeBlock argumentAssociations
@@ -110,13 +132,14 @@ MicTextualMicrodownExporter >> visitEnvironment: anEnvironment [
 
 	builder 
 		environment: anEnvironment name 
-		body: [ :b | super visitEnvironment: anEnvironment ] 
+		body: [ super visitEnvironment: anEnvironment ] 
 		arguments: anEnvironment arguments
 ]
 
 { #category : #'visit - format' }
 MicTextualMicrodownExporter >> visitFigure: aFigure [
 	
+	builder newLine.
 	builder
 		figureURL: aFigure url
 		withCaption: [ super visitFigure: aFigure ]
@@ -125,9 +148,10 @@ MicTextualMicrodownExporter >> visitFigure: aFigure [
 
 { #category : #'visit - block' }
 MicTextualMicrodownExporter >> visitHeader: aHeader [
-	"self halt."
+	
+	builder newLine.
 	builder 
-		header: [:b | aHeader headerElements do: [ :each | each accept: self ] ] 
+		header: [ aHeader headerElements do: [ :each | each accept: self ] ] 
 		withLevel: aHeader level
 ]
 
@@ -188,17 +212,26 @@ MicTextualMicrodownExporter >> visitMonospace: aMonospaceFormat [
 { #category : #'visit - block' }
 MicTextualMicrodownExporter >> visitOrderedList: anOrderedList [
 
-	builder unorderedListDuring: [ super visitOrderedList: anOrderedList ]
+	| block |
+	block := [  ].
+	self inList ifFalse: 
+		[ builder newLine.
+		 self setTrueInList.
+		 block := [ self setFalseInList ] ].
+	builder unorderedListDuring: [ super visitOrderedList: anOrderedList ].
+	block value
 ]
 
 { #category : #'visit - block' }
 MicTextualMicrodownExporter >> visitOrderedListItem: anItem [
 
-	builder orderedItem: [ super visitOrderedListItem: anItem ]
+	builder orderedItem: [ super visitListItem: anItem ]
 ]
 
 { #category : #'visit - block' }
 MicTextualMicrodownExporter >> visitParagraph: aParagraph [
+
+	builder newLine.
 	builder 
 		paragraph: [ super visitParagraph: aParagraph ]
 ]
@@ -236,6 +269,13 @@ MicTextualMicrodownExporter >> visitText: aMicTextBlock [
 
 { #category : #'visit - block' }
 MicTextualMicrodownExporter >> visitUnorderedList: aUnorderedList [
-
-	builder unorderedListDuring: [ super visitUnorderedList: aUnorderedList ]
+	
+	| block |
+	block := [  ].
+	self inList ifFalse: 
+		[ builder newLine.
+		 self setTrueInList.
+		 block := [ self setFalseInList ] ].
+	builder unorderedListDuring: [ super visitUnorderedList: aUnorderedList ].
+	block value
 ]
