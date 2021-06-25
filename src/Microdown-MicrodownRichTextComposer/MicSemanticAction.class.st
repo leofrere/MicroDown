@@ -13,27 +13,27 @@ sem browse
 ```
 "
 Class {
-	#name : #BCSemanticAction,
+	#name : #MicSemanticAction,
 	#superclass : #Object,
 	#instVars : [
 		'entity',
 		'tokens'
 	],
-	#category : #BeautifulComments
+	#category : #'Microdown-MicrodownRichTextComposer'
 }
 
 { #category : #'instance creation' }
-BCSemanticAction class >> from: aString [ 
+MicSemanticAction class >> from: aString [ 
 	^ self fromTokens: (RBScanner scanTokens: aString)
 ]
 
 { #category : #'instance creation' }
-BCSemanticAction class >> fromTokens: anArray [ 
+MicSemanticAction class >> fromTokens: anArray [ 
 	^ self new fromTokens: anArray; yourself
 ]
 
 { #category : #'instance creation' }
-BCSemanticAction >> computeEntity [
+MicSemanticAction >> computeEntity [
 	"Try to guess what the text is:
 		Point
 		Point >> #setX:setY: 
@@ -66,12 +66,12 @@ BCSemanticAction >> computeEntity [
 ]
 
 { #category : #accessing }
-BCSemanticAction >> entity [
+MicSemanticAction >> entity [
 	^ entity
 ]
 
 { #category : #'instance creation' }
-BCSemanticAction >> fromTokens: anArray [
+MicSemanticAction >> fromTokens: anArray [
 	
 	anArray ifEmpty: [ ^ self].
 	tokens := anArray.
@@ -79,7 +79,7 @@ BCSemanticAction >> fromTokens: anArray [
 ]
 
 { #category : #'instance creation' }
-BCSemanticAction >> getClassOrNil [
+MicSemanticAction >> getClassOrNil [
 
 	self class environment 
 			at: tokens first asString asSymbol  
@@ -90,7 +90,7 @@ BCSemanticAction >> getClassOrNil [
 ]
 
 { #category : #'instance creation' }
-BCSemanticAction >> getCompiledMethodFrom: start [
+MicSemanticAction >> getCompiledMethodFrom: start [
 
 	"
 	| selector |
@@ -107,7 +107,7 @@ BCSemanticAction >> getCompiledMethodFrom: start [
 ]
 
 { #category : #'instance creation' }
-BCSemanticAction >> getMetaClassOrNil [
+MicSemanticAction >> getMetaClassOrNil [
 
 	self class environment 
 			at: tokens first asString asSymbol  
@@ -121,19 +121,19 @@ BCSemanticAction >> getMetaClassOrNil [
 ]
 
 { #category : #'instance creation' }
-BCSemanticAction >> getPackageOrNil [
+MicSemanticAction >> getPackageOrNil [
 	entity := RPackageOrganizer default packageNamed: tokens first asString ifAbsent: [ nil ].
 	^ entity
 				
 ]
 
 { #category : #testing }
-BCSemanticAction >> hasEntity [
+MicSemanticAction >> hasEntity [
 	^ entity isNotNil
 ]
 
 { #category : #accessing }
-BCSemanticAction >> tokens: aCol [
+MicSemanticAction >> tokens: aCol [
 
 	tokens := aCol
 ]

@@ -75,6 +75,23 @@ MicEnvironmentBlock >> accept: aVisitor [
  	^ aVisitor visitEnvironment: self
 ]
 
+{ #category : #adding }
+MicEnvironmentBlock >> addLineAndReturnNextNode: line [
+	"add line to this node. 
+	Notice, the action is allowed to create new nodes in the block tree.
+	Returns the node to handle next line - typically self."
+	
+	isClosed
+		ifTrue: [ ^ self ].
+	(self doesLineStartWithStopMarkup: line)
+		ifTrue: [ ^ self ].
+	firstLine
+		ifNil:
+			[ firstLine := self extractFirstLineFrom: line ]
+		ifNotNil: [ ^ self bodyFromLine: line ].
+	^ self
+]
+
 { #category : #accessing }
 MicEnvironmentBlock >> arguments [
 	
@@ -90,7 +107,16 @@ MicEnvironmentBlock >> body [
 { #category : #'parse support' }
 MicEnvironmentBlock >> bodyElements [
 
-	^ body
+	^ children
+]
+
+{ #category : #'parse support' }
+MicEnvironmentBlock >> bodyFromLine: line [
+	
+	| newBlock |
+	newBlock := (self newBlockFor: line parent: self).
+	self parser setCurrent: newBlock.
+	^ newBlock
 ]
 
 { #category : #'parse support' }
@@ -98,9 +124,9 @@ MicEnvironmentBlock >> closeMe [
 
 	"this is a temporary solution because normally the parser should populate body with MicBlocks.
 	Right now just make sure that we have structured text = inline elements. "
-	body ifNotNil: [ 
+	"body ifNotNil: [ 
 		body :=  self inlineParse: body ].
-	children := body
+	children := body"
 ]
 
 { #category : #accessing }
@@ -122,7 +148,7 @@ MicEnvironmentBlock >> lineStartMarkup [
 
 { #category : #markups }
 MicEnvironmentBlock >> lineStopMarkup [
-
+	
 	^ parser environmentClosingBlockMarkup 
 ]
 

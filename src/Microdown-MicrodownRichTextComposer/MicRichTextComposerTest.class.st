@@ -1,150 +1,150 @@
 Class {
-	#name : #BCRichTextComposerTest,
+	#name : #MicRichTextComposerTest,
 	#superclass : #TestCase,
 	#instVars : [
 		'sample',
 		'parser'
 	],
-	#category : #BeautifulComments
+	#category : #'Microdown-MicrodownRichTextComposer'
 }
 
 { #category : #helpers }
-BCRichTextComposerTest >> assertWriting: aPRDocument include: expectedAttribute [
+MicRichTextComposerTest >> assertWriting: aPRDocument include: expectedAttribute [
 	self assert: ((self runsOf: aPRDocument) includes: {expectedAttribute})
 ]
 
 { #category : #'tests - format' }
-BCRichTextComposerTest >> boldFormat [
+MicRichTextComposerTest >> boldFormat [
 	^ TextEmphasis bold
 ]
 
 { #category : #helpers }
-BCRichTextComposerTest >> composer [
+MicRichTextComposerTest >> composer [
 	^ self composerClass new
 ]
 
 { #category : #helpers }
-BCRichTextComposerTest >> composerClass [
-	^ BCRichTextComposer
+MicRichTextComposerTest >> composerClass [
+	^ MicRichTextComposer
 ]
 
 { #category : #'skipped tests' }
-BCRichTextComposerTest >> externalLink: aLink [
+MicRichTextComposerTest >> externalLink: aLink [
 	^ TextAction new actOnClickBlock: [WebBrowser openOn: aLink]
 ]
 
 { #category : #'skipped tests' }
-BCRichTextComposerTest >> figure: aFigureLink [
+MicRichTextComposerTest >> figure: aFigureLink [
 	| url |
 	url := aFigureLink.
 	^ TextAnchor new anchoredMorph: (ZnEasy getPng: url)
 ]
 
 { #category : #'tests - header' }
-BCRichTextComposerTest >> headerLevel1 [
+MicRichTextComposerTest >> headerLevel1 [
 
 	^ self composerClass headerLevelFont: 1
 ]
 
 { #category : #'tests - header' }
-BCRichTextComposerTest >> headerLevel2 [
+MicRichTextComposerTest >> headerLevel2 [
 
 	^ self composerClass headerLevelFont: 2
 ]
 
 { #category : #'tests - header' }
-BCRichTextComposerTest >> headerLevel3 [
+MicRichTextComposerTest >> headerLevel3 [
 
 	^ self composerClass headerLevelFont: 3
 ]
 
 { #category : #'tests - header' }
-BCRichTextComposerTest >> headerLevel4 [
+MicRichTextComposerTest >> headerLevel4 [
 
 	^ self composerClass headerLevelFont: 4
 ]
 
 { #category : #'tests - header' }
-BCRichTextComposerTest >> headerLevel5 [
+MicRichTextComposerTest >> headerLevel5 [
 
 	^ self composerClass headerLevelFont: 5
 ]
 
 { #category : #'tests - header' }
-BCRichTextComposerTest >> headerLevel6 [
+MicRichTextComposerTest >> headerLevel6 [
 
 	^ self composerClass headerLevelFont: 6
 ]
 
 { #category : #'tests - format' }
-BCRichTextComposerTest >> italicFormat [
+MicRichTextComposerTest >> italicFormat [
 	^ TextEmphasis italic
 ]
 
 { #category : #'tests - header' }
-BCRichTextComposerTest >> microElementsFrom: aString [
+MicRichTextComposerTest >> microElementsFrom: aString [
 	^ sample documentFrom: aString.
 	
 ]
 
 { #category : #'tests - format' }
-BCRichTextComposerTest >> monospaceFormat [
+MicRichTextComposerTest >> monospaceFormat [
 	^ TextBackgroundColor color: Smalltalk ui theme settings windowColor
 ]
 
 { #category : #'tests - format' }
-BCRichTextComposerTest >> normalFormat [
+MicRichTextComposerTest >> normalFormat [
 	^ TextEmphasis normal
 ]
 
 { #category : #helpers }
-BCRichTextComposerTest >> richTextFor: aDocument [
+MicRichTextComposerTest >> richTextFor: aDocument [
 
 	^ self composer visit: aDocument
 ]
 
 { #category : #helpers }
-BCRichTextComposerTest >> runsOf: aDocument [
+MicRichTextComposerTest >> runsOf: aDocument [
 	
 	^ (self richTextFor: aDocument) runs
 ]
 
 { #category : #running }
-BCRichTextComposerTest >> setUp [
+MicRichTextComposerTest >> setUp [
 	super setUp.
 	sample := MicMicrodownSnippetFactory new.
 	parser := MicroDownParser new.
 ]
 
 { #category : #'skipped tests' }
-BCRichTextComposerTest >> strikethroughtFormat [
+MicRichTextComposerTest >> strikethroughtFormat [
 	^ TextEmphasis struckOut
 ]
 
 { #category : #helpers }
-BCRichTextComposerTest >> stringOf: aPRDocument [
+MicRichTextComposerTest >> stringOf: aPRDocument [
 	
 	^ (self richTextFor: aPRDocument) string
 ]
 
 { #category : #'skipped tests' }
-BCRichTextComposerTest >> subscriptFormat [
+MicRichTextComposerTest >> subscriptFormat [
 	^ TextColor red
 ]
 
 { #category : #'tests - format' }
-BCRichTextComposerTest >> superscriptFormat [
+MicRichTextComposerTest >> superscriptFormat [
 	^ TextColor blue
 ]
 
 { #category : #'tests - format' }
-BCRichTextComposerTest >> testBoldFormat [
+MicRichTextComposerTest >> testBoldFormat [
 
 	self assertWriting: (self microElementsFrom: sample boldFormatSample) include: self boldFormat
 ]
 
 { #category : #'tests - codeBlock' }
-BCRichTextComposerTest >> testCodeBlock [
+MicRichTextComposerTest >> testCodeBlock [
 	| runs richText |
 	self skip.
 	richText := self richTextFor: sample codeblock.
@@ -167,7 +167,7 @@ BCRichTextComposerTest >> testCodeBlock [
 ]
 
 { #category : #'skipped tests' }
-BCRichTextComposerTest >> testExternaLink [
+MicRichTextComposerTest >> testExternaLink [
 
 	| pillarLink target obj1 obj2 raised |
 	self skip.
@@ -186,7 +186,7 @@ BCRichTextComposerTest >> testExternaLink [
 ]
 
 { #category : #'skipped tests' }
-BCRichTextComposerTest >> testFigure [
+MicRichTextComposerTest >> testFigure [
 
 	| link pillarLink obj1 obj2 raised |
 	self skip.
@@ -205,7 +205,7 @@ BCRichTextComposerTest >> testFigure [
 ]
 
 { #category : #'tests - header' }
-BCRichTextComposerTest >> testHeaderLevel1 [
+MicRichTextComposerTest >> testHeaderLevel1 [
 
 	self 
 		assertWriting: (self microElementsFrom: sample headerLevel1Sample) 
@@ -213,7 +213,7 @@ BCRichTextComposerTest >> testHeaderLevel1 [
 ]
 
 { #category : #'tests - header' }
-BCRichTextComposerTest >> testHeaderLevel2 [
+MicRichTextComposerTest >> testHeaderLevel2 [
 
 	self 
 		assertWriting: (self microElementsFrom: sample headerLevel2Sample) 
@@ -221,7 +221,7 @@ BCRichTextComposerTest >> testHeaderLevel2 [
 ]
 
 { #category : #'tests - header' }
-BCRichTextComposerTest >> testHeaderLevel3 [
+MicRichTextComposerTest >> testHeaderLevel3 [
 
 	self 
 		assertWriting: (self microElementsFrom: sample headerLevel3Sample) 
@@ -229,7 +229,7 @@ BCRichTextComposerTest >> testHeaderLevel3 [
 ]
 
 { #category : #'tests - header' }
-BCRichTextComposerTest >> testHeaderLevel4 [
+MicRichTextComposerTest >> testHeaderLevel4 [
 
 	self 
 		assertWriting: (self microElementsFrom: sample headerLevel4Sample) 
@@ -237,7 +237,7 @@ BCRichTextComposerTest >> testHeaderLevel4 [
 ]
 
 { #category : #'tests - header' }
-BCRichTextComposerTest >> testHeaderLevel5 [
+MicRichTextComposerTest >> testHeaderLevel5 [
 
 	self 
 		assertWriting: (self microElementsFrom: sample headerLevel5Sample) 
@@ -245,7 +245,7 @@ BCRichTextComposerTest >> testHeaderLevel5 [
 ]
 
 { #category : #'tests - header' }
-BCRichTextComposerTest >> testHeaderLevel6 [
+MicRichTextComposerTest >> testHeaderLevel6 [
 
 	self 
 		assertWriting: (self microElementsFrom: sample headerLevel6Sample) 
@@ -253,13 +253,13 @@ BCRichTextComposerTest >> testHeaderLevel6 [
 ]
 
 { #category : #'tests - format' }
-BCRichTextComposerTest >> testItalicFormat [
+MicRichTextComposerTest >> testItalicFormat [
 	self assertWriting: (self microElementsFrom: sample italicFormatSample) include: self italicFormat
 
 ]
 
 { #category : #'skipped tests' }
-BCRichTextComposerTest >> testNestedList [
+MicRichTextComposerTest >> testNestedList [
 	| runs string |
 	self skip.
 	runs := self runsOf: sample nestedList.
@@ -281,25 +281,24 @@ BCRichTextComposerTest >> testNestedList [
 ]
 
 { #category : #'tests - list' }
-BCRichTextComposerTest >> testNestedUnorderedListAreCorrectlyNumbered [
+MicRichTextComposerTest >> testNestedUnorderedListAreCorrectlyNumbered [
 	| elts list |
-	elts := (self microElementsFrom: '- unordered1
-  - subunordered1
-  - subunordered2
-  - subunordered3
-- unordered2').
-	BCRichTextComposer new visit: elts. 
+	elts := (self microElementsFrom: '1. unordered1
+1. subunordered1
+2. subunordered2
+3. subunordered3
+4. unordered2').
+	MicRichTextComposer new visit: elts. 
 	self assert: elts children size equals: 1.
-	self assert: elts children first class equals: MicUnorderedListBlock.
+	self assert: elts children first class equals: MicOrderedListBlock.
 	list := elts children first.
-	self assert: list children size equals: 2.
-	self assert: list children first children first children size equals: 3.
-	self assert: (list children first children first children first propertyAt: #counter) equals: 2
+	self assert: list children size equals: 5.
+	self assert: (list children second propertyAt: #counter) equals: '2.'
 	
 ]
 
 { #category : #'tests - list' }
-BCRichTextComposerTest >> testOrderedList [ 
+MicRichTextComposerTest >> testOrderedList [ 
 	| runs string elts |
 	elts := (self microElementsFrom: '1. First item
 2. Second item
@@ -309,13 +308,13 @@ BCRichTextComposerTest >> testOrderedList [
 	string := self stringOf: elts.
 	self assert: runs first first class equals: TextIndent.
 	self assert: runs first first amount equals: 1.
-	self assert: runs runs equals: #(3 7 1 3 7 1) asArray.
+	self assert: runs runs equals: #(3 10 1 3 24 1 3 10 1).
 	self assert: string first equals: $1.
-	self assert: (string at: 12) equals: $2.
+	self assert: (string at: 12) equals: $e.
 ]
 
 { #category : #'tests - paragraph' }
-BCRichTextComposerTest >> testParagraphNotFormat [
+MicRichTextComposerTest >> testParagraphNotFormat [
 	| runs richText |
 	richText := self richTextFor: (self microElementsFrom: '
 foo
@@ -333,7 +332,7 @@ barwith a space
 ]
 
 { #category : #'skipped tests' }
-BCRichTextComposerTest >> testStrikethroughFormat [ 
+MicRichTextComposerTest >> testStrikethroughFormat [ 
 	"Test fails: strikethrough is recognized only if spaces surround text
 	So this test fails:
 		self assertWriting: factory strikethroughFormatSample include: self strikethroughtFormat.
@@ -343,7 +342,7 @@ BCRichTextComposerTest >> testStrikethroughFormat [
 ]
 
 { #category : #'tests - stylers' }
-BCRichTextComposerTest >> testStylersAreRegistered [
+MicRichTextComposerTest >> testStylersAreRegistered [
 
 	| defaultStyler |
 	defaultStyler := self composerClass languageStylerFor: 'blblbl'.
@@ -351,7 +350,7 @@ BCRichTextComposerTest >> testStylersAreRegistered [
 ]
 
 { #category : #'tests - stylers' }
-BCRichTextComposerTest >> testStylersForText [
+MicRichTextComposerTest >> testStylersForText [
 
 	| defaultStyler |
 	defaultStyler := self composerClass languageStylerFor: 'text'.
@@ -359,7 +358,7 @@ BCRichTextComposerTest >> testStylersForText [
 ]
 
 { #category : #'skipped tests' }
-BCRichTextComposerTest >> testSubscriptFormat [
+MicRichTextComposerTest >> testSubscriptFormat [
 	"Test fails: subscript isn't recognized
 	
 	self assertWriting: factory subscriptFormatSample include: self subscriptFormat"
@@ -369,7 +368,7 @@ BCRichTextComposerTest >> testSubscriptFormat [
 ]
 
 { #category : #'tests - format' }
-BCRichTextComposerTest >> testTextFormat [
+MicRichTextComposerTest >> testTextFormat [
 	self flag: #tofix.
 	self skip.
 	self 
@@ -378,7 +377,7 @@ BCRichTextComposerTest >> testTextFormat [
 ]
 
 { #category : #'tests - list' }
-BCRichTextComposerTest >> testUnorderedList [ 
+MicRichTextComposerTest >> testUnorderedList [ 
 	| runs string elts |
 	elts := (self microElementsFrom: '- First item
 - Second item
@@ -388,10 +387,10 @@ BCRichTextComposerTest >> testUnorderedList [
 	string := self stringOf: elts.
 	self assert: runs first first class equals: TextIndent.
 	self assert: runs first first amount equals: 1.
-	self assert: runs runs equals: #(2 6 1 2 6 1) asArray.
+	self assert: runs runs equals: #(2 10 1 2 25 1 2 10 1)
 ]
 
 { #category : #'tests - format' }
-BCRichTextComposerTest >> underlineFormat [
+MicRichTextComposerTest >> underlineFormat [
 	^ TextEmphasis underlined
 ]
