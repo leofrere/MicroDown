@@ -46,10 +46,16 @@ setParser: MicroDownParser new)'
 
 { #category : #'tests-block' }
 MicDumperTest >> testPrintCode [
+
 	| micCode |
-	micCode := (parser parse: (factory codeblock: 'smalltalk&label=42' body: 'Foo')) children first.
-	self assert: (micCode accept: visitor) contents equals: '(MicCodeBlock new
+	micCode := (parser parse:
+		            (factory codeblock: 'smalltalk&label=42' body: 'Foo'))
+		           children first.
+	self
+		assert: (micCode accept: visitor) contents
+		equals: '(MicCodeBlock new
 body: ''Foo'';
+isClosed: true;
 firstTag: ''smalltalk&label'';
 firstLine: ''smalltalk&label=42'';
 arguments: {#smalltalk->nil . #label->''42''} asDictionary;
@@ -81,12 +87,15 @@ setParser: MicroDownParser new)'
 
 { #category : #'tests-block' }
 MicDumperTest >> testPrintHeader [
-| micHeader |
-	micHeader := (parser parse: factory headerLevel3Sample) children first.
-	self assert: (micHeader accept: visitor) contents equals: '(MicHeaderBlock new
+
+	| micHeader |
+	micHeader := (parser parse: factory headerLevel3Sample) children
+		             first.
+	self
+		assert: (micHeader accept: visitor) contents
+		equals: '(MicHeaderBlock new
 addChild: (MicTextBlock new
-substring: ''Foo'';
-setParser: MicroDownParser new);
+substring: ''Foo'');
 level: 3;
 setParser: MicroDownParser new)'
 ]
@@ -105,8 +114,7 @@ MicDumperTest >> testPrintListItem [
 	micListItem := (parser parse: factory listMultiSample) children first children first.
 	self assert: (micListItem accept: visitor) contents equals: '(MicListItemBlock new
 addChild: (MicTextBlock new
-substring: ''1'';
-setParser: MicroDownParser new);
+substring: ''1'');
 setParser: MicroDownParser new)'
 ]
 

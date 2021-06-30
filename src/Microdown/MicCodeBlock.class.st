@@ -79,6 +79,11 @@ MicCodeBlock >> firstTag [
 ]
 
 { #category : #accessing }
+MicCodeBlock >> firstTag: aString [ 
+	firstTag := aString
+]
+
+{ #category : #accessing }
 MicCodeBlock >> firstTagValue [
 	^ arguments at: self firstTag ifAbsent: [ '' ]
 ]
@@ -87,6 +92,11 @@ MicCodeBlock >> firstTagValue [
 MicCodeBlock >> hasFirstTag [
 
 	^ firstTag isNotEmpty
+]
+
+{ #category : #accessing }
+MicCodeBlock >> isClosed: aBoolean [ 
+	isClosed := aBoolean.
 ]
 
 { #category : #visiting }

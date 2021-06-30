@@ -21,3 +21,8 @@ MicCommentBlock >> lineMarkup [
 
 	^ parser commentedLineMarkup 
 ]
+
+{ #category : #accessing }
+MicCommentBlock >> text: aString [ 
+	text := aString.
+]

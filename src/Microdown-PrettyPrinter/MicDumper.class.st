@@ -181,6 +181,9 @@ MicDumper >> visitCode: aCode [
 		nextPutAll: 'body: ';
 		nextPutAll: (self surround: aCode body with: '''');
 		nextPutAll: ';
+isClosed: ';
+		nextPutAll: aCode isClosed asString;
+		nextPutAll: ';
 firstTag: ';
 		nextPutAll: (self surround: aCode firstTag with: '''');
 		nextPutAll: ';
@@ -188,11 +191,11 @@ firstLine: ';
 		nextPutAll: (self surround: aCode firstLine with: '''');
 		nextPutAll: ';
 arguments: '.
-		(self buildDictionnary: aCode arguments).
-		stream nextPutAll: ';
+	self buildDictionnary: aCode arguments.
+	stream nextPutAll: ';
 '.
-		self setParser.
-		stream nextPutAll: ')'
+	self setParser.
+	stream nextPutAll: ')'
 ]
 
 { #category : #'visit-block' }
@@ -486,16 +489,15 @@ MicDumper >> visitTable: aTable [
 
 { #category : #'visit-inline block' }
 MicDumper >> visitText: aMicText [
+
 	stream nextPutAll: '('.
 	aMicText class printOn: stream.
-	stream nextPutAll: ' new
+	stream
+		nextPutAll: ' new
 ';
-	nextPutAll: 'substring: ';
-	nextPutAll: (self surround: aMicText substring with: '''');
-	nextPutAll: ';
-'.
-	self setParser.
-	stream nextPutAll: ')'
+		nextPutAll: 'substring: ';
+		nextPutAll: (self surround: aMicText substring with: '''');
+		nextPutAll: ')'
 ]
 
 { #category : #'visit-block' }
