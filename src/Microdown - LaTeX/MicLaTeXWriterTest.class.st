@@ -531,6 +531,42 @@ MicLaTeXWriterTest >> testThereIsABlankLineBetweenTextAndTable [
 		includesText: 'This is a table:' , nLine , nLine , self tableBegin
 ]
 
+{ #category : #'tests - lists' }
+MicLaTeXWriterTest >> testUnorderedList [
+	| mic |
+	mic := parser parse: factory unorderedListWithTwoItemsSample.
+	self assert: (visitor visit: mic) contents equals: '
+\begin{itemize}
+\item Foo
+\item Bar
+\end{itemize}
+'
+]
+
+{ #category : #'tests - lists' }
+MicLaTeXWriterTest >> testUnorderedListBold [
+	| mic |
+	mic := parser parse: factory unorderedListWithTwoItemsBoldSample.
+	self assert: (visitor visit: mic) contents equals: '
+\begin{itemize}
+\item \textbf{Foo}
+\item Bar
+\end{itemize}
+'
+]
+
+{ #category : #'tests - lists' }
+MicLaTeXWriterTest >> testUnorderedListNested [
+	| mic |
+	mic := parser parse: factory unorderedListWithTwoItemsNestedSample.
+	self assert: (visitor visit: mic) contents equals: '
+\begin{itemize}
+\item \sout{\textit{Foo}}
+\item Bar
+\end{itemize}
+'
+]
+
 { #category : #'tests-internalLinks' }
 MicLaTeXWriterTest >> testUrlsAreProtected [
 	| writer |
