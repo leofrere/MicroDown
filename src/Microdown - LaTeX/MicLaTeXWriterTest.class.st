@@ -232,6 +232,14 @@ MicLaTeXWriterTest >> testAnchor [
 	self assertWriting: item includesText: '\label{foo}'
 ]
 
+{ #category : #tests }
+MicLaTeXWriterTest >> testAnnotated [
+	| mic |
+	mic := parser parse: (factory annotatedSample).
+	self assert: (visitor visit: mic) contents equals: '
+Foo \textit{bar}'
+]
+
 { #category : #'tests - format' }
 MicLaTeXWriterTest >> testBold [
 	| mic |
