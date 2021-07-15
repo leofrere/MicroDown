@@ -405,16 +405,22 @@ MicLaTeXWriter >> writeCaptionOfExternalLink: anExternalLink [
 
 { #category : #helpers }
 MicLaTeXWriter >> writeGraphicsParametersOfExternalLink: anExternalLink [
+
 	canvas
 		nextPutAll: 'width=';
-		nextPutAll: ((anExternalLink parameters at: 'width' ifAbsent: [ 100 ]) asNumber / 100.0) printString;
+		nextPutAll:
+			((anExternalLink arguments at: 'width' ifAbsent: [ 100 ]) asNumber
+			 / 100.0) printString;
 		raw: '\textwidth'
 ]
 
 { #category : #helpers }
 MicLaTeXWriter >> writeLabelOfExternalLink: anExternalLink [
+
 	| label |
-	label := anExternalLink parameters at: 'label' ifAbsent: [ anExternalLink localFileOrExternalReference ].
+	label := anExternalLink arguments
+		         at: 'label'
+		         ifAbsent: [ anExternalLink localFileOrExternalReference ].
 	canvas command
 		name: 'label';
 		parameter: [ canvas raw: label ]
