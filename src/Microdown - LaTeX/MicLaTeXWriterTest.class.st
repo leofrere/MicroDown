@@ -494,6 +494,17 @@ MicLaTeXWriterTest >> testPreformattedExportsToUnprotectedVerbatim [
 ]
 
 { #category : #tests }
+MicLaTeXWriterTest >> testQuote [
+	| mic |
+	mic := parser parse: (factory quoteSample).
+	self assert: (visitor visit: mic) contents equals: '
+\begin{verbatim}
+Foo
+\end{verbatim}
+'
+]
+
+{ #category : #tests }
 MicLaTeXWriterTest >> testReferencesToSectionsAreNotEscaped [
 	|item|
 	item := PRInternalLink reference: '@a_section_somewhere'.
