@@ -159,13 +159,6 @@ MicLaTeXWriter >> visitCode: aCodeBlock [
 ]
 
 { #category : #'visiting-document' }
-MicLaTeXWriter >> visitDefinitionList: aList [
-	canvas environment
-		name: 'description';
-		with: [ super visitDefinitionList: aList ]
-]
-
-{ #category : #'visiting-document' }
 MicLaTeXWriter >> visitFigure: aFigure [
 	(aFigure hasCaption not and: [ aFigure hasLabel not ])
 		ifTrue: [ 
