@@ -324,28 +324,40 @@ MicLaTeXWriter >> visitStrike: aFormat [
 MicLaTeXWriter >> visitTable: aTable [
 	| environment |
 	environment := canvas environment name: self tabularEnvironment.
-	aTable rowCount = 0
+	aTable rows size = 0
 		ifTrue: [ environment with: [  ].
 			^ self ].
 	environment parameter: aTable latexSpecification.
 	environment
 		with: [ canvas command name: 'toprule'.
 			canvas newLine.
-			super visitTable: aTable.
+			aTable rows doWithIndex: [ :row :i | self visitTableRow: row with: aTable hasHeader at: i].
 			canvas command name: 'bottomrule'.
 			canvas newLine ]
 ]
 
 { #category : #'visiting-document' }
 MicLaTeXWriter >> visitTableCell: aCell [
-	aCell isAligned
-		ifFalse: [ self writeTableCellContent: aCell ]
+"	aCell isAligned
+		ifFalse: [" self writeTableCellContent: aCell "]
 		ifTrue: [ 
 			canvas command
 				name: 'multicolumn';
 				parameter: '1';
 				parameter: aCell latexAlignment;
-				parameter: [ self writeTableCellContent: aCell ] ]
+				parameter: [ self writeTableCellContent: aCell ] ]"
+]
+
+{ #category : #'visiting-document' }
+MicLaTeXWriter >> visitTableCell: aCell with: aBool [
+"	aCell isAligned
+		ifFalse: [" self writeTableCellContent: aCell with: aBool "]
+		ifTrue: [ 
+			canvas command
+				name: 'multicolumn';
+				parameter: '1';
+				parameter: aCell latexAlignment;
+				parameter: [ self writeTableCellContent: aCell ] ]"
 ]
 
 { #category : #'visiting-document' }
@@ -355,6 +367,18 @@ MicLaTeXWriter >> visitTableRow: aRow [
 		raw: ' \\';
 		newLine.
 	aRow isHeading
+		ifTrue: [ 
+			canvas command name: 'midrule'.
+			canvas newLine ]
+]
+
+{ #category : #'visiting-document' }
+MicLaTeXWriter >> visitTableRow: aRow with: aBool at: anIndex [
+	aRow do: [ :cell | self visitTableCell: cell with: (aBool and: [ anIndex = 1 ]) ] separatedBy: [ canvas raw: ' & ' ].
+	canvas
+		raw: ' \\';
+		newLine.
+	(aBool and: [ anIndex = 1 ])
 		ifTrue: [ 
 			canvas command name: 'midrule'.
 			canvas newLine ]
@@ -402,6 +426,16 @@ MicLaTeXWriter >> writeTableCellContent: aCell [
 		ifTrue: [ 
 			canvas command
 				name: 'textbf';
-				parameter: [ super visitTableCell: aCell ] ]
-		ifFalse: [ super visitTableCell: aCell ]
+				parameter: [ self visitAll: aCell ] ]
+		ifFalse: [ self visitAll: aCell ]
+]
+
+{ #category : #helpers }
+MicLaTeXWriter >> writeTableCellContent: aCell with: aBool [
+	^ aBool
+		ifTrue: [ 
+			canvas command
+				name: 'textbf';
+				parameter: [ self visitAll: aCell ] ]
+		ifFalse: [ self visitAll: aCell ]
 ]
