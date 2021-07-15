@@ -565,34 +565,6 @@ bar & rab \\
 '
 ]
 
-{ #category : #tests }
-MicLaTeXWriterTest >> testTableWith2CellsInARow [
-	| item |
-	item := super testTableWith2CellsInARow.
-	self assertWriting: item includesText: 'foo & foo \\'
-	
-]
-
-{ #category : #tests }
-MicLaTeXWriterTest >> testTablesHaveSeparatingLines [
-	| text |
-	text := '|!Syntax |!What it represents
-|startPoint|a variable name'.
-	self assertWriting: (self parser parse: text) includesTexts: { 'toprule' . 'midrule' . 'bottomrule' }
-]
-
-{ #category : #tests }
-MicLaTeXWriterTest >> testThereIsABlankLineBetweenTextAndTable [
-	| text nLine |
-	nLine := Smalltalk os lineEnding.
-	text := 'This is a table:
-| foo
-| bar'.
-	self
-		assertWriting: (self parser parse: text)
-		includesText: 'This is a table:' , nLine , nLine , self tableBegin
-]
-
 { #category : #'tests - lists' }
 MicLaTeXWriterTest >> testUnorderedList [
 	| mic |
