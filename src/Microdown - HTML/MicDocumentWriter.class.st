@@ -120,7 +120,7 @@ MicDocumentWriter >> getStringForAll: aCollection [
 		visitor := (self class on: newStream)
 			configuration: self configuration;
 			yourself.
-		aCollection do: [ :object | visitor start: object ] ]
+		aCollection do: [ :object | visitor visit: object ] ]
 ]
 
 { #category : #initialization }
