@@ -9,3 +9,8 @@ MicCitationBlock class >> tag [
 
 	^ #citation
 ]
+
+{ #category : #visiting }
+MicCitationBlock >> accept: aVisitor [
+	aVisitor visitCitation: self
+]
