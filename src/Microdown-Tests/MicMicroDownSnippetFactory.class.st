@@ -60,6 +60,11 @@ MicMicrodownSnippetFactory >> boldFormatSample [
 	^ self surroundWithMarkup: self parserClass boldMarkup
 ]
 
+{ #category : #'as yet unclassified' }
+MicMicrodownSnippetFactory >> citationSample [
+	^ '?{citation|cite=this is a citation}?'
+]
+
 { #category : #'code block' }
 MicMicrodownSnippetFactory >> codeBlockParameterWithLiteralArraySample [
 
