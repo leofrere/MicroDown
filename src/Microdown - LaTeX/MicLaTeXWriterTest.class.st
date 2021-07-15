@@ -242,6 +242,39 @@ MicLaTeXWriterTest >> testBold [
 '
 ]
 
+{ #category : #'tests - codeblock' }
+MicLaTeXWriterTest >> testCodeblock [
+	| mic |
+	mic := parser parse: (factory codeblockNoParamBody: 'this is a code').
+	self assert: (visitor visit: mic) contents equals: '
+\begin{listing}
+this is a code
+\end{listing}
+'
+]
+
+{ #category : #'tests - codeblock' }
+MicLaTeXWriterTest >> testCodeblockWithCaption [
+	| mic |
+	mic := parser parse: (factory codeblock: 'caption=Pharo is **cool**' body: 'this is a code').
+	self assert: (visitor visit: mic) contents equals: '
+\begin{listing}[caption={Pharo is \textbf{cool}}, language=''caption'']
+this is a code
+\end{listing}
+'
+]
+
+{ #category : #'tests - codeblock' }
+MicLaTeXWriterTest >> testCodeblockWithParameters [
+	| mic |
+	mic := parser parse: (factory codeblock: 'language=Smalltalk&size=42' body: 'this is a code').
+	self assert: (visitor visit: mic) contents equals: '
+\begin{listing}[language=''Smalltalk'']
+this is a code
+\end{listing}
+'
+]
+
 { #category : #requirements }
 MicLaTeXWriterTest >> testExportCitation [
 
