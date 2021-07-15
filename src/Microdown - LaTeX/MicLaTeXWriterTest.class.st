@@ -351,6 +351,48 @@ MicLaTeXWriterTest >> testFigureLabelNotEscaped [
 	self assertWriting: item includesText: 'a_b'
 ]
 
+{ #category : #'tests - header' }
+MicLaTeXWriterTest >> testHeaderLevel1LaTeX [
+	| mic |
+	mic := parser parse: factory headerLevel1Sample.
+	self assert: (visitor visit: mic) contents equals: '\part{Foo}'
+]
+
+{ #category : #'tests - header' }
+MicLaTeXWriterTest >> testHeaderLevel2LaTeX [
+	| mic |
+	mic := parser parse: factory headerLevel2Sample.
+	self assert: (visitor visit: mic) contents equals: '\chapter{Foo}'
+]
+
+{ #category : #'tests - header' }
+MicLaTeXWriterTest >> testHeaderLevel3LaTeX [
+	| mic |
+	mic := parser parse: factory headerLevel3Sample.
+	self assert: (visitor visit: mic) contents equals: '\section{Foo}'
+]
+
+{ #category : #'tests - header' }
+MicLaTeXWriterTest >> testHeaderLevel4LaTeX [
+	| mic |
+	mic := parser parse: factory headerLevel4Sample.
+	self assert: (visitor visit: mic) contents equals: '\subsection{Foo}'
+]
+
+{ #category : #'tests - header' }
+MicLaTeXWriterTest >> testHeaderLevel5LaTeX [
+	| mic |
+	mic := parser parse: factory headerLevel5Sample.
+	self assert: (visitor visit: mic) contents equals: '\subsubsection{Foo}'
+]
+
+{ #category : #'tests - header' }
+MicLaTeXWriterTest >> testHeaderLevel6LaTeX [
+	| mic |
+	mic := parser parse: factory headerLevel6Sample.
+	self assert: (visitor visit: mic) contents equals: '\paragraph{Foo}'
+]
+
 { #category : #'tests-internalLinks' }
 MicLaTeXWriterTest >> testInternalLinkWithoutAliasWithRefWithAncorWithSeparateOutputFiles [
 	| item resultString |
