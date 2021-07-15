@@ -133,7 +133,7 @@ MicLaTeXWriter >> visitBold: aFormat [
 MicLaTeXWriter >> visitCitation: aCitation [
 	canvas command
 		name: 'cite';
-		parameter: aCitation ref.
+		parameter: (aCitation arguments at: #cite).
 
 ]
 
