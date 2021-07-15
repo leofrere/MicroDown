@@ -351,6 +351,15 @@ MicLaTeXWriterTest >> testFigureLabelNotEscaped [
 	self assertWriting: item includesText: 'a_b'
 ]
 
+{ #category : #tests }
+MicLaTeXWriterTest >> testFootnote [
+	| mic |
+	mic := parser parse: (factory footnoteSample).
+	self assert: (visitor visit: mic) contents equals: '
+\footnote{Pharo is cool}
+'
+]
+
 { #category : #'tests - header' }
 MicLaTeXWriterTest >> testHeaderLevel1LaTeX [
 	| mic |
