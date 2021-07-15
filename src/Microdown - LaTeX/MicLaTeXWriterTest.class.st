@@ -364,6 +364,42 @@ MicLaTeXWriterTest >> testMonospace [
 '
 ]
 
+{ #category : #'tests - lists' }
+MicLaTeXWriterTest >> testOrderedList [
+	| mic |
+	mic := parser parse: factory orderedListWithTwoItemsSample.
+	self assert: (visitor visit: mic) contents equals: '
+\begin{enumerate}
+\item first
+\item second
+\end{enumerate}
+'
+]
+
+{ #category : #'tests - lists' }
+MicLaTeXWriterTest >> testOrderedListBold [
+	| mic |
+	mic := parser parse: factory orderedListWithTwoItemsBoldSample.
+	self assert: (visitor visit: mic) contents equals: '
+\begin{enumerate}
+\item \textbf{first}
+\item second
+\end{enumerate}
+'
+]
+
+{ #category : #'tests - lists' }
+MicLaTeXWriterTest >> testOrderedListNested [
+	| mic |
+	mic := parser parse: factory orderedListWithTwoItemsNestedSample.
+	self assert: (visitor visit: mic) contents equals: '
+\begin{enumerate}
+\item \textbf{\textit{first}}
+\item second
+\end{enumerate}
+'
+]
+
 { #category : #'tests - paragraph' }
 MicLaTeXWriterTest >> testParagraph [
 	| mic |
