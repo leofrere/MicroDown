@@ -537,6 +537,35 @@ MicLaTeXWriterTest >> testStrike [
 ]
 
 { #category : #tests }
+MicLaTeXWriterTest >> testTable [
+	| mic |
+	mic := parser parse: (factory tableSample).
+	self assert: (visitor visit: mic) contents equals: '
+\begin{tabular}{ll}
+\toprule
+\textbf{aaab} & \textbf{jkhjh} \\
+\midrule
+bar & rab \\
+\bottomrule
+\end{tabular}
+'
+]
+
+{ #category : #tests }
+MicLaTeXWriterTest >> testTableWhithoutHeader [
+	| mic |
+	mic := parser parse: (factory simpleTableWithoutHeaderTable).
+	self assert: (visitor visit: mic) contents equals: '
+\begin{tabular}{ll}
+\toprule
+aaab & jkhjh \\
+bar & rab \\
+\bottomrule
+\end{tabular}
+'
+]
+
+{ #category : #tests }
 MicLaTeXWriterTest >> testTableWith2CellsInARow [
 	| item |
 	item := super testTableWith2CellsInARow.
