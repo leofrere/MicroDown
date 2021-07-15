@@ -286,15 +286,12 @@ this is a code
 
 { #category : #requirements }
 MicLaTeXWriterTest >> testExportCitation [
-
-	| item |
-	self skip.
-	item := PRDocument new
-		add: (PRCitation ref: 'hello');
-		yourself.
-	self
-		assertWriting: item
-		includesText: self citationRepresentation.
+		| mic |
+	mic := parser parse: factory citationSample.
+	visitor visit: mic.
+	self assert: visitor contents equals: '
+\cite{this is a citation}
+'
 ]
 
 { #category : #'tests-internalLinks' }
