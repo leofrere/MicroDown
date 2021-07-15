@@ -227,10 +227,10 @@ MicLaTeXWriterTest >> termItemWithFoo [
 
 { #category : #tests }
 MicLaTeXWriterTest >> testAnchor [
-	| item |
-	self skip.
-	item := PRAnchor new name: 'foo'.
-	self assertWriting: item includesText: '\label{foo}'
+	| mic |
+	mic := parser parse: factory anchorSample.
+	visitor visit: mic.
+	self assert: visitor contents equals: '\label{test}'
 ]
 
 { #category : #tests }
