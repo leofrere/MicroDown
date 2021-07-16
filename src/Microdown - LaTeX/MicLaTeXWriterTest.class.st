@@ -35,6 +35,22 @@ MicLaTeXWriterTest >> citationRepresentation [
 	^'\cite{hello}'
 ]
 
+{ #category : #writing }
+MicLaTeXWriterTest >> configurationClass [
+
+	^ ConfigurationForMicrodown
+]
+
+{ #category : #writing }
+MicLaTeXWriterTest >> createWriterWithSeparateOutputFilesOn: aWriteStream [
+	^ (self actualClass on: aWriteStream)
+		configuration:
+				(self configurationClass new
+						separateOutputFiles: true;
+						yourself);
+		yourself
+]
+
 { #category : #requirements }
 MicLaTeXWriterTest >> dataItemWithBar [
 	^ ' bar'
@@ -229,6 +245,15 @@ MicLaTeXWriterTest >> termItemWithFoo [
 MicLaTeXWriterTest >> testAnchor [
 	| mic |
 	mic := parser parse: factory anchorSample.
+	visitor visit: mic.
+	self assert: visitor contents equals: '\label{test}'
+]
+
+{ #category : #tests }
+MicLaTeXWriterTest >> testAnchorReference [
+	| mic |
+	self skip.
+	mic := parser parse: factory anchorReferenceSample.
 	visitor visit: mic.
 	self assert: visitor contents equals: '\label{test}'
 ]
