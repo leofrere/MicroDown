@@ -1,14 +1,27 @@
 Class {
 	#name : #MicLaTeXCanvas,
 	#superclass : #MicExportCanvas,
+	#instVars : [
+		'LatexCharacters'
+	],
 	#classVars : [
 		'LatexCharacters'
 	],
 	#category : #'Microdown - LaTeX'
 }
 
+{ #category : #tags }
+MicLaTeXCanvas >> command [
+	^ self brush: PRLaTeXCommand new
+]
+
+{ #category : #tags }
+MicLaTeXCanvas >> environment [
+	^ self brush: PRLaTeXEnvironment new
+]
+
 { #category : #'class initialization' }
-MicLaTeXCanvas class >> initialize [
+MicLaTeXCanvas >> initialize [
 	" self initialize "
 	LatexCharacters := Dictionary new.
 	LatexCharacters
@@ -81,16 +94,6 @@ MicLaTeXCanvas class >> initialize [
 		at: $~ put: '\textasciitilde{}';
 		at: $ñ put: '\~{n}';
 		at: $Ñ put: '\~{N}'
-]
-
-{ #category : #tags }
-MicLaTeXCanvas >> command [
-	^ self brush: PRLaTeXCommand new
-]
-
-{ #category : #tags }
-MicLaTeXCanvas >> environment [
-	^ self brush: PRLaTeXEnvironment new
 ]
 
 { #category : #'writing text' }
