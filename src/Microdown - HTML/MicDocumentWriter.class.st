@@ -166,7 +166,7 @@ MicDocumentWriter >> setStream: aStream [
 
 { #category : #visiting }
 MicDocumentWriter >> start: anObject [
-	super start: anObject.
+	super visit: anObject.
 	canvas flush
 ]
 
