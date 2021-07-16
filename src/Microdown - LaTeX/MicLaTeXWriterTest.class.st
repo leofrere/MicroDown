@@ -331,7 +331,7 @@ MicLaTeXWriterTest >> testExternalLinkWithCaptionShouldPrintUrlAsFootnote [
 MicLaTeXWriterTest >> testExternalLinkWithCaptionShouldProtectUrlInFootnotes [
 	| link |
 	self skip.
-	link := self addText: 'Launcher' to: (PRExternalLink reference: 'http://www.smalltalkhub.com/#!/~Pharo/PharoLauncher').
+	link := self addText: 'Launcher' to: (MicAnchorReferenceBlock new reference: 'http://www.smalltalkhub.com/#!/~Pharo/PharoLauncher').
 	self assertWriting: link includesText: '\footnote{\url{http://www.smalltalkhub.com/\#!/~Pharo/PharoLauncher}}'
 ]
 
@@ -420,13 +420,14 @@ MicLaTeXWriterTest >> testHeaderLevel6LaTeX [
 MicLaTeXWriterTest >> testInternalLinkWithoutAliasWithRefWithAncorWithSeparateOutputFiles [
 	| item resultString |
 	self skip.
-	item := PRParagraph new
-		add: (PRAnchor named: 'foo');
-		add: (PRInternalLink reference: 'ref@foo');
+	item := MicParagraphBlock new
+		addChild: (MicAnchorBlock new label: 'foo');
+		addChild: (MicAnchorReferenceBlock new reference: 'ref@foo';
+		substring: 'foo');
 		yourself.
 	self should: [ resultString := self writeWithSeparateOutputFiles: item ] raise: PRLinkWarning.
 	[ resultString := self writeWithSeparateOutputFiles: item ]
-		on: PRLinkWarning
+		on: MicLinkWarning
 		do: [ :w | w resume ].
 	self resultWithRefWithAnchorWithSeparateOutputFiles = ''
 		ifFalse: [ self assert: (resultString includesSubstring: self resultWithRefWithAnchorWithSeparateOutputFiles) ]
@@ -684,4 +685,13 @@ MicLaTeXWriterTest >> unorderedListBegin [
 { #category : #requirements }
 MicLaTeXWriterTest >> widthFor50percents [
 	^ '0.5'
+]
+
+{ #category : #writing }
+MicLaTeXWriterTest >> writeWithSeparateOutputFiles: aDocumentItem [
+	| writer |
+	^ String
+		streamContents: [ :stream | 
+			writer := self createWriterWithSeparateOutputFilesOn: stream.
+			writer start: aDocumentItem ]
 ]
