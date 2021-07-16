@@ -114,6 +114,37 @@ MicLaTeXWriter >> visitAnchor: anAnchor [
 ]
 
 { #category : #'visiting-document' }
+MicLaTeXWriter >> visitAnchorReference: anInternalLink [
+	(anInternalLink reference isNil or: [ self configuration separateOutputFiles not ])
+		ifTrue: [ 
+			anInternalLink children
+				ifNotEmpty: [ 
+					anInternalLink hasAnchor
+						ifTrue: [ self createLinkToLabelWithAlias: anInternalLink ]
+						ifFalse: [ 
+							MicLinkWarning
+								signal:
+									(PRPillarWriter write: anInternalLink)
+										,
+											' will not be render because you export without separate output files. If you want your link to be render add an anchor to the beginning of your file.'.
+							canvas nextPutAll: anInternalLink alias ] ]
+				ifEmpty: [ 
+					anInternalLink reference isNotNil
+						ifTrue: [ self createLinkToLabelWithoutAlias: anInternalLink ] ] ]
+		ifFalse: [ 
+			anInternalLink children
+				ifNotEmpty: [ 
+					self flag: #todo.	"If we don't render the link we can put it as Footer. We need to do it."
+					canvas nextPutAll: anInternalLink alias ]
+				ifEmpty: [ 
+					MicLinkWarning
+						signal:
+							(MicTextualMicrodownExporter new visit: anInternalLink)
+								,
+									' will not be exported because LaTeX doesn''t support the inter-files links. Please add an Alias to keep this internal link.' ] ]
+]
+
+{ #category : #'visiting-document' }
 MicLaTeXWriter >> visitAnnotatedParagraph: anAnnotatedParagraph [
 	"Annotations need to be defined as environments in LaTeX include files (e.g. common.tex)"
 
@@ -201,37 +232,6 @@ MicLaTeXWriter >> visitHorizontalRule: anHorizontalRule [
 	canvas newLine; newLine.
 	canvas raw: '\rule{\textwidth}{0.1pt}'.
 	canvas newLine.
-]
-
-{ #category : #'visiting-document' }
-MicLaTeXWriter >> visitInternalLink: anInternalLink [
-	(anInternalLink reference isNil or: [ self configuration separateOutputFiles not ])
-		ifTrue: [ 
-			anInternalLink hasAlias
-				ifTrue: [ 
-					anInternalLink hasAnchor
-						ifTrue: [ self createLinkToLabelWithAlias: anInternalLink ]
-						ifFalse: [ 
-							PRLinkWarning
-								signal:
-									(PRPillarWriter write: anInternalLink)
-										,
-											' will not be render because you export without separate output files. If you want your link to be render add an anchor to the beginning of your file.'.
-							canvas nextPutAll: anInternalLink alias ] ]
-				ifFalse: [ 
-					anInternalLink hasAnchor
-						ifTrue: [ self createLinkToLabelWithoutAlias: anInternalLink ] ] ]
-		ifFalse: [ 
-			anInternalLink hasAlias
-				ifTrue: [ 
-					self flag: #todo.	"If we don't render the link we can put it as Footer. We need to do it."
-					canvas nextPutAll: anInternalLink alias ]
-				ifFalse: [ 
-					PRLinkWarning
-						signal:
-							(PRPillarWriter write: anInternalLink)
-								,
-									' will not be exported because LaTeX doesn''t support the inter-files links. Please add an Alias to keep this internal link.' ] ]
 ]
 
 { #category : #'visiting-document' }
