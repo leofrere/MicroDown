@@ -37,7 +37,7 @@ MicLaTeXWriter class >> writerName [
 
 { #category : #accessing }
 MicLaTeXWriter >> canvasClass [
-	^ PRLaTeXCanvas
+	^ MicLaTeXCanvas initialize
 ]
 
 { #category : #templating }
