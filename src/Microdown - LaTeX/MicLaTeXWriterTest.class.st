@@ -16,7 +16,7 @@ MicLaTeXWriterTest class >> isAbstract [
 
 { #category : #private }
 MicLaTeXWriterTest >> actualClass [
-	^ PRLaTeXWriter
+	^ MicLaTeXWriter
 ]
 
 { #category : #private }
