@@ -366,28 +366,6 @@ MicLaTeXWriterTest >> testFigureBold [
 ]
 
 { #category : #tests }
-MicLaTeXWriterTest >> testFigureCaptionWithNonTextChildren [
-	| item |
-	self skip.
-	item := PRFigure new
-		reference: 'file://picture.png';
-		add: (self addText: 'foo' to: PRBoldFormat new);
-		yourself.
-	self assertWriting: item includesText: self boldFoo
-]
-
-{ #category : #tests }
-MicLaTeXWriterTest >> testFigureLabelNotEscaped [
-	| item |
-	self skip.
-	item := PRFigure new
-		reference: 'file://picture.png';
-		label: 'a_b';
-		yourself.
-	self assertWriting: item includesText: 'a_b'
-]
-
-{ #category : #tests }
 MicLaTeXWriterTest >> testFootnote [
 	| mic |
 	mic := parser parse: (factory footnoteSample).
@@ -499,34 +477,6 @@ MicLaTeXWriterTest >> testLinkBold [
 '
 ]
 
-{ #category : #tests }
-MicLaTeXWriterTest >> testLinksWithBadCharactersInCaption [
-	| item url caption |
-	self skip.
-	url := 'http://www.pharo.org'.
-	caption := 'bad chars #_'.
-	item := PRExternalLink new
-		reference: url;
-		add: (PRText content: caption);
-		yourself.
-	self assertWriting: item includesText: 'bad chars \#\_'
-]
-
-{ #category : #tests }
-MicLaTeXWriterTest >> testLinksWithEitherHrefOrUrl [
-	| item url caption |
-	self skip.
-	url := 'http://www.pharo.org#foo'.
-	caption := 'some caption'.
-	item := PRExternalLink new reference: url.
-	self assertWriting: item includesText: '\url{' , url , '}'.
-	item := PRExternalLink new
-		reference: url;
-		add: (PRText content: caption);
-		yourself.
-	self assertWriting: item includesText: '\href{' , url , '}{' , caption , '}'
-]
-
 { #category : #'tests - format' }
 MicLaTeXWriterTest >> testMonospace [
 	| mic |
@@ -623,18 +573,6 @@ this is a \textbf{\textit{paragraph}}
 ]
 
 { #category : #tests }
-MicLaTeXWriterTest >> testPreformattedExportsToUnprotectedVerbatim [
-	"Special characters in a Pillar preformattted group should not be protected by backslashes because they are exported in a verbatim LaTeX environment."
-
-	| item |
-	self skip.
-	item := PRPreformatted with: (PRText content: '[[[').
-	self
-		assertWriting: item
-		includesText: self preformattedFooBegin , self configuration newLine , '[[[' , self configuration newLine
-]
-
-{ #category : #tests }
 MicLaTeXWriterTest >> testQuote [
 	| mic |
 	mic := parser parse: (factory quoteSample).
@@ -643,42 +581,6 @@ MicLaTeXWriterTest >> testQuote [
 Foo
 \end{verbatim}
 '
-]
-
-{ #category : #tests }
-MicLaTeXWriterTest >> testReferencesToSectionsAreNotEscaped [
-	|item|
-	self skip.
-	item := PRInternalLink reference: '@a_section_somewhere'.
-	self assertWriting: item includesText: 'a_section_somewhere'
-]
-
-{ #category : #tests }
-MicLaTeXWriterTest >> testScriptWithCorrectNewLines [
-	| item |
-	self skip.
-	item := (PRCodeblock content: 'foo')
-		label: 'myScript';
-		caption: 'a caption';
-		yourself.
-	self
-		assertWriting: item
-		includesText:
-			self configuration newLine , 'foo' , self configuration newLine , '\end{'
-]
-
-{ #category : #tests }
-MicLaTeXWriterTest >> testStrictLineBreaksInAnnotatedParagraphs [
-	| item lineBreak |
-	self skip.
-	item := self
-		addText: 'Blah'
-		to:
-			(PRAnnotatedParagraph new
-				annotation: 'note';
-				yourself).
-	lineBreak := self configuration newLine.
-	self assertWriting: item includesText: '\begin{note}' , lineBreak , 'Blah' , lineBreak , '\end{note}' , lineBreak
 ]
 
 { #category : #'tests - format' }
