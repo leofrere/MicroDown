@@ -12,12 +12,12 @@ Class {
 
 { #category : #tags }
 MicLaTeXCanvas >> command [
-	^ self brush: PRLaTeXCommand new
+	^ self brush: MicLaTeXCommand new
 ]
 
 { #category : #tags }
 MicLaTeXCanvas >> environment [
-	^ self brush: PRLaTeXEnvironment new
+	^ self brush: MicLaTeXEnvironment new
 ]
 
 { #category : #'class initialization' }

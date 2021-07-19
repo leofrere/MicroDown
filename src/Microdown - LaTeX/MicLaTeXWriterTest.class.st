@@ -457,7 +457,7 @@ MicLaTeXWriterTest >> testInternalLinkWithoutAliasWithRefWithAncorWithSeparateOu
 		addChild: (MicAnchorReferenceBlock new reference: 'ref@foo';
 		substring: 'foo');
 		yourself.
-	self should: [ resultString := self writeWithSeparateOutputFiles: item ] raise: PRLinkWarning.
+	self should: [ resultString := self writeWithSeparateOutputFiles: item ] raise: MicLinkWarning.
 	[ resultString := self writeWithSeparateOutputFiles: item ]
 		on: MicLinkWarning
 		do: [ :w | w resume ].
@@ -469,13 +469,13 @@ MicLaTeXWriterTest >> testInternalLinkWithoutAliasWithRefWithAncorWithSeparateOu
 MicLaTeXWriterTest >> testInternalLinkWithoutAliasWithReferenceWithoutAnchorWithSeparateOutputFiles [
 	| item resultString |
 	self skip.
-	item := PRParagraph new
-		add: (PRAnchor named: 'foo');
-		add: (PRInternalLink reference: 'ref');
+	item := MicParagraphBlock new
+		addChild: (MicAnchorBlock new label: 'foo');
+		addChild: (MicAnchorReferenceBlock new reference: 'ref');
 		yourself.
-	self should: [ resultString := self writeWithSeparateOutputFiles: item ] raise: PRLinkWarning.
+	self should: [ resultString := self writeWithSeparateOutputFiles: item ] raise: MicLinkWarning.
 	[ resultString := self writeWithSeparateOutputFiles: item ]
-		on: PRLinkWarning
+		on: MicLinkWarning
 		do: [ :w | w resume ].
 	self resultWithRefWithoutAnchorWithSeparateOutputFiles = ''
 		ifFalse: [ self assert: (resultString includesSubstring: self resultWithRefWithoutAnchorWithSeparateOutputFiles) ]

@@ -116,16 +116,17 @@ MicLaTeXWriter >> visitAnchor: anAnchor [
 
 { #category : #'visiting-document' }
 MicLaTeXWriter >> visitAnchorReference: anInternalLink [
-	(anInternalLink reference isNil or: [ self configuration separateOutputFiles not ])
+	self halt.
+	(anInternalLink substring isNil or: [ self configuration separateOutputFiles not ])
 		ifTrue: [ 
 			anInternalLink children
 				ifNotEmpty: [ 
-					anInternalLink hasAnchor
+					anInternalLink label isNotNil
 						ifTrue: [ self createLinkToLabelWithAlias: anInternalLink ]
 						ifFalse: [ 
 							MicLinkWarning
 								signal:
-									(PRPillarWriter write: anInternalLink)
+									(MicTextualMicrodownExporter new write: anInternalLink)
 										,
 											' will not be render because you export without separate output files. If you want your link to be render add an anchor to the beginning of your file.'.
 							canvas nextPutAll: anInternalLink alias ] ]
@@ -135,7 +136,7 @@ MicLaTeXWriter >> visitAnchorReference: anInternalLink [
 		ifFalse: [ 
 			anInternalLink children
 				ifNotEmpty: [ 
-					self flag: #todo.	"If we don't render the link we can put it as Footer. We need to do it."
+					self flag: #todo.	"If we don't render the link we can put it as Footer. We need to do it."				
 					canvas nextPutAll: anInternalLink alias ]
 				ifEmpty: [ 
 					MicLinkWarning
