@@ -48,6 +48,7 @@ MicLaTeXWriter >> chapterTemplateName [
 
 { #category : #helpers }
 MicLaTeXWriter >> createLinkToLabelWithAlias: anInternalLink [
+	self halt.
 	canvas command
 		name: 'hyperref';
 		optParameter: [ canvas nextPutAll: anInternalLink anchor ];
@@ -61,7 +62,7 @@ MicLaTeXWriter >> createLinkToLabelWithAlias: anInternalLink [
 MicLaTeXWriter >> createLinkToLabelWithoutAlias: anInternalLink [
 	canvas command
 		name: 'ref';
-		parameter: [ canvas raw: anInternalLink anchor ]
+		parameter: [ canvas raw: anInternalLink reference ]
 ]
 
 { #category : #'visiting-document' }
