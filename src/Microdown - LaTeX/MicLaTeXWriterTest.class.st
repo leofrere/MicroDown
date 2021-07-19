@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'factory',
 		'visitor',
-		'parser'
+		'parser',
+		'configuration'
 	],
 	#category : #'Microdown - LaTeX'
 }
@@ -19,10 +20,30 @@ MicLaTeXWriterTest >> actualClass [
 	^ MicLaTeXWriter
 ]
 
+{ #category : #'tests-internalLinks' }
+MicLaTeXWriterTest >> addText: aString to: aDocumentItem [
+	^ aDocumentItem
+		children: { (MicTextBlock new substring: aString) };
+		yourself
+]
+
 { #category : #private }
 MicLaTeXWriterTest >> annotationBegin: annotationString [
 	^ '\begin{' , annotationString , '}'.
 	
+]
+
+{ #category : #'tests-internalLinks' }
+MicLaTeXWriterTest >> assert: result includesSubstring: expected [
+	expected ifEmpty: [ ^ self ].
+	self assert: (expected includesSubstring: result) description: ('''{1}'' not in ''{2}''' format: {result . expected})
+]
+
+{ #category : #'tests-internalLinks' }
+MicLaTeXWriterTest >> assertWriting: aDocumentItem includesText: aString [
+	| result |
+	result := self write: aDocumentItem.
+	self assert: result includesSubstring: aString
 ]
 
 { #category : #requirements }
@@ -35,10 +56,22 @@ MicLaTeXWriterTest >> citationRepresentation [
 	^'\cite{hello}'
 ]
 
+{ #category : #'tests-internalLinks' }
+MicLaTeXWriterTest >> configuration [
+	^ configuration ifNil: [ configuration := self configurationClass new ]
+]
+
 { #category : #writing }
 MicLaTeXWriterTest >> configurationClass [
 
 	^ ConfigurationForMicrodown
+]
+
+{ #category : #'tests-internalLinks' }
+MicLaTeXWriterTest >> createWriterOn: aWriteStream [ 
+	^ (self actualClass on: aWriteStream)
+		configuration: self configuration;
+		yourself
 ]
 
 { #category : #writing }
@@ -322,8 +355,7 @@ MicLaTeXWriterTest >> testExportCitation [
 { #category : #'tests-internalLinks' }
 MicLaTeXWriterTest >> testExternalLinkWithCaptionShouldPrintUrlAsFootnote [
 	| link |
-	self skip.
-	link := self addText: 'Pharo' to: (PRExternalLink reference: 'http://www.pharo.org').
+	link := self addText: 'Pharo' to: (MicLinkBlock new url: 'http://www.pharo.org').
 	self assertWriting: link includesText: '\href{http://www.pharo.org}{Pharo}\footnote{\url{http://www.pharo.org}}'
 ]
 
@@ -331,7 +363,7 @@ MicLaTeXWriterTest >> testExternalLinkWithCaptionShouldPrintUrlAsFootnote [
 MicLaTeXWriterTest >> testExternalLinkWithCaptionShouldProtectUrlInFootnotes [
 	| link |
 	self skip.
-	link := self addText: 'Launcher' to: (MicAnchorReferenceBlock new reference: 'http://www.smalltalkhub.com/#!/~Pharo/PharoLauncher').
+	link := self addText: 'Launcher' to: (MicLinkBlock new url: 'http://www.smalltalkhub.com/#!/~Pharo/PharoLauncher').
 	self assertWriting: link includesText: '\footnote{\url{http://www.smalltalkhub.com/\#!/~Pharo/PharoLauncher}}'
 ]
 
@@ -685,6 +717,16 @@ MicLaTeXWriterTest >> unorderedListBegin [
 { #category : #requirements }
 MicLaTeXWriterTest >> widthFor50percents [
 	^ '0.5'
+]
+
+{ #category : #'tests-internalLinks' }
+MicLaTeXWriterTest >> write: aDocumentItem [
+
+	^ String
+		streamContents: [ :stream | 
+			| writer |
+			writer := self createWriterOn: stream.
+			writer start: aDocumentItem ]
 ]
 
 { #category : #writing }
