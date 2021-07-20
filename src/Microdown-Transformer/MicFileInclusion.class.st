@@ -111,7 +111,7 @@ MicFileInclusion >> visitInputfile: anInputFileAnnotation [
 	 includedFile ifExists:[
 		microdownAST := (MicInputDocument forFile: includedFile) parsedDocument.
 	
-	MicCleanAnnotationInParagraph new visit: microdownAST.
+	self flag: 'MicCleanAnnotationInParagraph new visit: microdownAST'.
 	
 	"Execute a file inclusion step recursively" 
 	microdownAST := MicFileInclusion new
