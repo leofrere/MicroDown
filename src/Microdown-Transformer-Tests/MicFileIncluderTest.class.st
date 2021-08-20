@@ -50,12 +50,12 @@ MicFileIncluderTest >> testBeforeIncludingTheInputFile [
 	includer topFile: filesystem workingDirectory.
 	
 	file := filesystem workingDirectory / 'test.mic'.
-	file writeStreamDo: [ :stream | stream nextPutAll: '?{inputfile|path=anExample1.mic}?' ].
+	file writeStreamDo: [ :stream | stream nextPutAll: '<?inputfile|path=anExample1.mic
+?>' ].
 	root := MicroDownParser new parseFile: file.
 	
 	"here we verify that ?{ ...}? is not a block and an element of a paragraph"
-	self assert: root children first class equals: MicParagraphBlock.
-	self assert: root children first children first class equals: MicInputfileBlock.
+	self assert: root children first class equals: MicInputfileBlock.
 	
 
 ]
@@ -88,7 +88,8 @@ MicFileIncluderTest >> testIncluderIncludesInputFile [
 	includer topFile: filesystem workingDirectory.
 	
 	file := filesystem workingDirectory / 'test.mic'.
-	file writeStreamDo: [ :stream | stream nextPutAll: '?{inputfile|path=anExample1.mic}?' ].
+	file writeStreamDo: [ :stream | stream nextPutAll: '<?inputfile|path=anExample1.mic
+?>' ].
 	root := (MicroDownParser new parseFile: file).
 	
 	includer visit: root.
@@ -96,10 +97,10 @@ MicFileIncluderTest >> testIncluderIncludesInputFile [
 	For example putting a header inside a paragraph does not make sense. 
 	I feel that I would prefer to have a top level expander in addition to an in place expander."
 
-	self assert: root children first children first class equals: MicHeaderBlock.
-	self assert: root children first children first header equals: 'Foo'.
-	self assert: root children first children second class equals: MicParagraphBlock.
-	self assert: root children first children third class equals: MicCodeBlock.
+	self assert: root children first class equals: MicHeaderBlock.
+	self assert: root children first header equals: 'Foo'.
+	self assert: root children second class equals: MicParagraphBlock.
+	self assert: root children third class equals: MicCodeBlock.
 
 
 
@@ -110,27 +111,30 @@ MicFileIncluderTest >> testIncluderIncludesInputFilesWithinTheSameParagraph [
 	"As a general remark I do not like that the input can produce document that are not correct from a parser 
 	point of view. For example we should have a paragraph containing an header and this is what the transformation of the includer is doing."
 	| includer root file |
+	self flag: 'useless since we used environment instead of annotation'.
 	includer := MicFileIncluder new.
 	includer topFile: filesystem workingDirectory.
 
 	file := filesystem workingDirectory / 'test.mic'.
-	file writeStreamDo: [ :stream | stream nextPutAll: '?{inputfile|path=anExample1.mic}?
-?{inputfile|path=anExample2.mic}?' ].
+	file writeStreamDo: [ :stream | stream nextPutAll: '<?inputfile|path=anExample1.mic
+?>
+<?inputfile|path=anExample2.mic
+?>' ].
 	root := (MicroDownParser new parseFile: file).
 	includer visit: root.
 
-	self assert: root children size equals: 1.
-	self assert: root children first children first class equals: MicHeaderBlock.
-	self assert: root children first children first header equals: 'Foo'.
-	self assert: root children first children first level equals: 1.
-	self assert: root children first children second class equals: MicParagraphBlock.
-	self assert: root children first children third class equals: MicCodeBlock.
+	self assert: root children size equals: 6.
+	self assert: root children first class equals: MicHeaderBlock.
+	self assert: root children first header equals: 'Foo'.
+	self assert: root children first level equals: 1.
+	self assert: root children second class equals: MicParagraphBlock.
+	self assert: root children third class equals: MicCodeBlock.
 	
-	self assert: root children first children fifth class equals: MicHeaderBlock.
-	self assert: root children first children fifth header equals: 'Bar'.
-	self assert: root children first children fifth level equals: 2.
-	self assert: root children first children sixth class equals: MicParagraphBlock.
-	self assert: root children first children seventh class equals: MicCodeBlock
+	self assert: root children fourth class equals: MicHeaderBlock.
+	self assert: root children fourth header equals: 'Bar'.
+	self assert: root children fourth level equals: 2.
+	self assert: root children fifth class equals: MicParagraphBlock.
+	self assert: root children sixth class equals: MicCodeBlock
 ]
 
 { #category : #tests }
@@ -141,21 +145,23 @@ MicFileIncluderTest >> testIncluderIncludesInputFilesWithoutNewline [
 	includer topFile: filesystem workingDirectory.
 
 	file := filesystem workingDirectory / 'test.mic'.
-	file writeStreamDo: [ :stream | stream nextPutAll: '?{inputfile|path=anExample1.mic}? ?{inputfile|path=anExample2.mic}?' ].
+	file writeStreamDo: [ :stream | stream nextPutAll: '<?inputfile|path=anExample1.mic
+?> 
+<?inputfile|path=anExample2.mic
+?>' ].
 	mic := (MicroDownParser new parseFile: file).
 	includer visit: mic.
 
-	self assert: mic children first children first class equals: MicHeaderBlock.
-	self assert: mic children first children second class equals: MicParagraphBlock.
-	self assert: mic children first children third class equals: MicCodeBlock.
+	self assert: mic children first class equals: MicHeaderBlock.
+	self assert: mic children second class equals: MicParagraphBlock.
+	self assert: mic children third class equals: MicCodeBlock.
 	
-	self assert: mic children first children fourth class equals: MicTextBlock.
 	
-	self assert: mic children first children fifth class equals: MicHeaderBlock.
-	self assert: mic children first children fifth header equals: 'Bar'.
-	self assert: mic children first children fifth level equals: 2.
-	self assert: mic children first children sixth class equals: MicParagraphBlock.
-	self assert: mic children first children seventh class equals: MicCodeBlock
+	self assert: mic children fourth class equals: MicHeaderBlock.
+	self assert: mic children fourth header equals: 'Bar'.
+	self assert: mic children fourth level equals: 2.
+	self assert: mic children fifth class equals: MicParagraphBlock.
+	self assert: mic children sixth class equals: MicCodeBlock
 ]
 
 { #category : #tests }
@@ -164,9 +170,10 @@ MicFileIncluderTest >> testIncluderJustReturnInputFileBlockWhenIncludedFileDoesN
 	| includer mic |
 	includer := MicFileIncluder new.
 	includer topFile: filesystem workingDirectory.
-	mic := (MicroDownParser new parse: '?{inputfile|path=anExample3.mic}?').
+	mic := (MicroDownParser new parse: '<?inputfile|path=anExample3.mic
+?>').
 	includer visit: mic.
-	self assert: mic children first children first class equals: MicInputfileBlock.
+	self assert: mic children first class equals: MicInputfileBlock.
 ]
 
 { #category : #tests }
@@ -176,19 +183,21 @@ MicFileIncluderTest >> testMicFileInclusionTransformMicInputFiles [
 	includer := MicFileIncluder new.
 	includer topFile: filesystem workingDirectory.
 	file := filesystem workingDirectory / 'test.mic'.
-	file writeStreamDo: [ :stream | stream nextPutAll: '?{inputfile|path=anExample1.mic}? 
+	file writeStreamDo: [ :stream | stream nextPutAll: '<?inputfile|path=anExample1.mic
+?> 
 
-?{inputfile|path=anExample2.mic}?' ].
+<?inputfile|path=anExample2.mic
+?>' ].
 	root := MicroDownParser new parseFile: file.
 	includer visit: root.
 
-	self assert: root children first children first class equals: MicHeaderBlock.
-	self assert: root children first children second class equals: MicParagraphBlock.
-	self assert: root children first children third class equals: MicCodeBlock.
+	self assert: root children first class equals: MicHeaderBlock.
+	self assert: root children second class equals: MicParagraphBlock.
+	self assert: root children third class equals: MicCodeBlock.
 	
-	self assert: root children second children first class equals: MicHeaderBlock.
-	self assert: root children second children second class equals: MicParagraphBlock.
+	self assert: root children fourth class equals: MicHeaderBlock.
+	self assert: root children fifth class equals: MicParagraphBlock.
 	
-	self assert: root children second children second children size equals: 2.
-	self assert: root children second children third class equals: MicCodeBlock
+	self assert: root children fifth children size equals: 2.
+	self assert: root children sixth class equals: MicCodeBlock
 ]
