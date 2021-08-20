@@ -91,7 +91,7 @@ MicFileIncluder >> visitInputfile: anInputFileAnnotation [
 	"I load the file and if the file exist I replace the node of the annotation by the content of the file."
 	
 	| includedFile microdownAST |
-	includedFile := topFile / anInputFileAnnotation path.
+	includedFile := anInputFileAnnotation originPath / anInputFileAnnotation path.
 	self validateInclusionOfFile: includedFile.
 	includedFile ifExists:[
 		microdownAST := (MicInputDocument forFile: includedFile) parsedDocument.
@@ -106,8 +106,7 @@ MicFileIncluder >> visitInputfile: anInputFileAnnotation [
 	References that were before relative to the included document, should be now relative to the container document."
 	MicUpdateFileInclusionReference
 		start: microdownAST
-		with: (includedFile parent relativeTo: topFile parent) microdownPrintString.
-	
+		with: (includedFile parent relativeTo: anInputFileAnnotation originPath parent) microdownPrintString.
 	self replaceCurrentNodeBy: microdownAST children]
 	
 ]
