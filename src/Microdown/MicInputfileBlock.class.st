@@ -3,7 +3,7 @@ may be rename the class later
 "
 Class {
 	#name : #MicInputfileBlock,
-	#superclass : #MicAnnotationBlock,
+	#superclass : #MicEnvironmentBlock,
 	#category : #'Microdown-Extensions'
 }
 
