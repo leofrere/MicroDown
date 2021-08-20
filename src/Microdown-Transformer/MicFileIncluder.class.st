@@ -91,6 +91,7 @@ MicFileIncluder >> visitInputfile: anInputFileAnnotation [
 	"I load the file and if the file exist I replace the node of the annotation by the content of the file."
 	
 	| includedFile microdownAST |
+	
 	includedFile := anInputFileAnnotation originPath / anInputFileAnnotation path.
 	self validateInclusionOfFile: includedFile.
 	includedFile ifExists:[
