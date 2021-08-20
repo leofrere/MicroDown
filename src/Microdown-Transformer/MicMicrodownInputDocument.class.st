@@ -13,7 +13,7 @@ MicMicrodownInputDocument class >> doesHandleExtension: anExtension [
 { #category : #accessing }
 MicMicrodownInputDocument >> parsedDocument [
 
-	^ self parserClass new parse: file contents
+	^ self parserClass new parseFile: file
 ]
 
 { #category : #accessing }
