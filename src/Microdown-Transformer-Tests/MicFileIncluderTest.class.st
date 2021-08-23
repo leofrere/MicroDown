@@ -47,7 +47,6 @@ MicFileIncluderTest >> testBeforeIncludingTheInputFile [
 
 	| includer root file|
 	includer := MicFileIncluder new.
-	includer topFile: filesystem workingDirectory.
 	
 	file := filesystem workingDirectory / 'test.mic'.
 	file writeStreamDo: [ :stream | stream nextPutAll: '<?inputfile|path=anExample1.mic
@@ -85,7 +84,6 @@ MicFileIncluderTest >> testIncluderIncludesInputFile [
 
 	| includer root file|
 	includer := MicFileIncluder new.
-	includer topFile: filesystem workingDirectory.
 	
 	file := filesystem workingDirectory / 'test.mic'.
 	file writeStreamDo: [ :stream | stream nextPutAll: '<?inputfile|path=anExample1.mic
@@ -113,7 +111,6 @@ MicFileIncluderTest >> testIncluderIncludesInputFilesWithinTheSameParagraph [
 	| includer root file |
 	self flag: 'useless since we used environment instead of annotation'.
 	includer := MicFileIncluder new.
-	includer topFile: filesystem workingDirectory.
 
 	file := filesystem workingDirectory / 'test.mic'.
 	file writeStreamDo: [ :stream | stream nextPutAll: '<?inputfile|path=anExample1.mic
@@ -142,7 +139,6 @@ MicFileIncluderTest >> testIncluderIncludesInputFilesWithoutNewline [
 
 	| includer mic file |
 	includer := MicFileIncluder new.
-	includer topFile: filesystem workingDirectory.
 
 	file := filesystem workingDirectory / 'test.mic'.
 	file writeStreamDo: [ :stream | stream nextPutAll: '<?inputfile|path=anExample1.mic
@@ -169,7 +165,6 @@ MicFileIncluderTest >> testIncluderJustReturnInputFileBlockWhenIncludedFileDoesN
 
 	| includer mic |
 	includer := MicFileIncluder new.
-	includer topFile: filesystem workingDirectory.
 	mic := (MicroDownParser new parse: '<?inputfile|path=anExample3.mic
 ?>').
 	includer visit: mic.
@@ -181,7 +176,6 @@ MicFileIncluderTest >> testMicFileInclusionTransformMicInputFiles [
 	"This test works because we have two paragraphs each one containing an inputfile."
 	| includer root file |
 	includer := MicFileIncluder new.
-	includer topFile: filesystem workingDirectory.
 	file := filesystem workingDirectory / 'test.mic'.
 	file writeStreamDo: [ :stream | stream nextPutAll: '<?inputfile|path=anExample1.mic
 ?> 
