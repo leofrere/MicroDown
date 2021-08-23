@@ -47,7 +47,6 @@ MicFileIncluderTest >> testBeforeIncludingTheInputFile [
 
 	| includer root file|
 	includer := MicFileIncluder new.
-	includer topFile: filesystem workingDirectory.
 	
 	file := filesystem workingDirectory / 'test.mic'.
 	file writeStreamDo: [ :stream | stream nextPutAll: '?{inputfile|path=anExample1.mic}?' ].
@@ -85,7 +84,6 @@ MicFileIncluderTest >> testIncluderIncludesInputFile [
 
 	| includer root file|
 	includer := MicFileIncluder new.
-	includer topFile: filesystem workingDirectory.
 	
 	file := filesystem workingDirectory / 'test.mic'.
 	file writeStreamDo: [ :stream | stream nextPutAll: '?{inputfile|path=anExample1.mic}?' ].
@@ -111,7 +109,6 @@ MicFileIncluderTest >> testIncluderIncludesInputFilesWithinTheSameParagraph [
 	point of view. For example we should have a paragraph containing an header and this is what the transformation of the includer is doing."
 	| includer root file |
 	includer := MicFileIncluder new.
-	includer topFile: filesystem workingDirectory.
 
 	file := filesystem workingDirectory / 'test.mic'.
 	file writeStreamDo: [ :stream | stream nextPutAll: '?{inputfile|path=anExample1.mic}?
@@ -138,7 +135,6 @@ MicFileIncluderTest >> testIncluderIncludesInputFilesWithoutNewline [
 
 	| includer mic file |
 	includer := MicFileIncluder new.
-	includer topFile: filesystem workingDirectory.
 
 	file := filesystem workingDirectory / 'test.mic'.
 	file writeStreamDo: [ :stream | stream nextPutAll: '?{inputfile|path=anExample1.mic}? ?{inputfile|path=anExample2.mic}?' ].
@@ -163,7 +159,6 @@ MicFileIncluderTest >> testIncluderJustReturnInputFileBlockWhenIncludedFileDoesN
 
 	| includer mic |
 	includer := MicFileIncluder new.
-	includer topFile: filesystem workingDirectory.
 	mic := (MicroDownParser new parse: '?{inputfile|path=anExample3.mic}?').
 	includer visit: mic.
 	self assert: mic children first children first class equals: MicInputfileBlock.
@@ -174,7 +169,6 @@ MicFileIncluderTest >> testMicFileInclusionTransformMicInputFiles [
 	"This test works because we have two paragraphs each one containing an inputfile."
 	| includer root file |
 	includer := MicFileIncluder new.
-	includer topFile: filesystem workingDirectory.
 	file := filesystem workingDirectory / 'test.mic'.
 	file writeStreamDo: [ :stream | stream nextPutAll: '?{inputfile|path=anExample1.mic}? 
 
