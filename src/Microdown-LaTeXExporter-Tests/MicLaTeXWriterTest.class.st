@@ -88,23 +88,12 @@ this is a code
 MicLaTeXWriterTest >> testFigure [
 	| mic |
 	mic := parser parse: factory figureSample2.
-	self flag: #tofix.
-	"we should give something similar to 
-	
-	\begin{figure}[htpb]
-\begin{center}
-\includegraphics[width=\linewidth]{stef-ReferenceSituation2.pdf}
-\caption{A schematic mini project composed of the A, B, C, D, E, and F hierarchies (thick borders denote hierarchy roots). \label{figureIllustrativeExampleCB}}
-\end{center}
-\end{figure}
-"
-
 	self assert: (writer visit: mic) contents equals: '
 
 \begin{figure}
 
 \begin{center}
-\includegraphics[width=1.0\textwidth]{https://www.inria.fr/sites/default/files/2020-01/Logo_Pharo_720x540.png}
+\includegraphics[width=1.0\linewidth]{https://www.inria.fr/sites/default/files/2020-01/Logo_Pharo_720x540.png}
 \caption{Foo \label{figureTest}}
 \end{center}
 \end{figure}
@@ -121,7 +110,7 @@ MicLaTeXWriterTest >> testFigureBold [
 \begin{figure}
 
 \begin{center}
-\includegraphics[width=1.0\textwidth]{/anUrl}
+\includegraphics[width=1.0\linewidth]{/anUrl}
 \caption{\textbf{Foo} \label{figureTest}}
 \end{center}
 \end{figure}

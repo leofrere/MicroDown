@@ -459,7 +459,7 @@ MicLaTeXWriter >> writeGraphicsParametersOfExternalLink: anExternalLink [
 		nextPutAll:
 			((anExternalLink arguments at: 'width' ifAbsent: [ 100 ]) asNumber
 			 / 100.0) printString;
-		raw: '\textwidth'
+		raw: '\linewidth'
 ]
 
 { #category : #helpers }
