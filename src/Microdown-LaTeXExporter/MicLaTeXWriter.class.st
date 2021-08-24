@@ -99,10 +99,16 @@ MicLaTeXWriter >> getTypeOfSectionFor: aHeader [
 
 { #category : #'visiting-document' }
 MicLaTeXWriter >> includeGraphicsFor: aFigure [
+	| url |
+	url := ''.
+	aFigure url scheme ifNotNil: [ 
+		url := url , aFigure url scheme , '://'.
+		aFigure url host ifNotNil: [ 
+			url := url , aFigure url host ] ].
 	canvas command
 		name: 'includegraphics';
 		optParameter: [ self writeGraphicsParametersOfExternalLink: aFigure ];
-		parameter: [ canvas raw: (aFigure localFileOrExternalReference) ]
+		parameter: [ canvas raw: (url , aFigure url pathPrintString) ]
 ]
 
 { #category : #initialization }
@@ -239,12 +245,14 @@ MicLaTeXWriter >> visitFigure: aFigure [
 				with:
 						[ 
 					self includeGraphicsFor: aFigure.
+					canvas newLine.
 					canvas command
 						name: 'caption';
 						parameter: [ 
 							self
-								writeCaptionOfExternalLink: aFigure;
-								writeLabelOfExternalLink: aFigure ].
+								writeCaptionOfExternalLink: aFigure.
+								canvas raw: ' '.
+								self writeLabelOfExternalLink: aFigure ].
 							canvas newLine ] ]
 ]
 
@@ -441,12 +449,11 @@ MicLaTeXWriter >> visitUnorderedList: aList [
 
 { #category : #helpers }
 MicLaTeXWriter >> writeCaptionOfExternalLink: anExternalLink [
-	self visitAll: anExternalLink children
+	self visitAll: anExternalLink captionElements
 ]
 
 { #category : #helpers }
 MicLaTeXWriter >> writeGraphicsParametersOfExternalLink: anExternalLink [
-
 	canvas
 		nextPutAll: 'width=';
 		nextPutAll:

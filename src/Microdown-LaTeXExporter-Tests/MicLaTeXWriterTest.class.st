@@ -87,7 +87,7 @@ this is a code
 { #category : #'tests - references' }
 MicLaTeXWriterTest >> testFigure [
 	| mic |
-	mic := parser parse: factory figureSample.
+	mic := parser parse: factory figureSample2.
 	self flag: #tofix.
 	"we should give something similar to 
 	
@@ -104,7 +104,8 @@ MicLaTeXWriterTest >> testFigure [
 \begin{figure}
 
 \begin{center}
-\includegraphics[width=1.0\textwidth]{/anUrl?label=figureTest&size=80}\caption{\label{figureTest}}
+\includegraphics[width=1.0\textwidth]{https://www.inria.fr/sites/default/files/2020-01/Logo_Pharo_720x540.png}
+\caption{Foo \label{figureTest}}
 \end{center}
 \end{figure}
 
@@ -120,7 +121,8 @@ MicLaTeXWriterTest >> testFigureBold [
 \begin{figure}
 
 \begin{center}
-\includegraphics[width=1.0\textwidth]{/anUrl?label=figureTest&size=80}\caption{\textbf{Foo}\label{figureTest}}
+\includegraphics[width=1.0\textwidth]{/anUrl}
+\caption{\textbf{Foo} \label{figureTest}}
 \end{center}
 \end{figure}
 

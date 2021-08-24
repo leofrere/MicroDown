@@ -206,6 +206,14 @@ MicMicrodownSnippetFactory >> figureSample [
 ]
 
 { #category : #format }
+MicMicrodownSnippetFactory >> figureSample2 [
+	^ '
+
+![Foo](https://www.inria.fr/sites/default/files/2020-01/Logo_Pharo_720x540.png?label=figureTest&size=80)
+'
+]
+
+{ #category : #format }
 MicMicrodownSnippetFactory >> figureStrikeSample [
 	^ '
 
