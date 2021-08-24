@@ -144,7 +144,10 @@ MicCodeBlock >> label [
 { #category : #accessing }
 MicCodeBlock >> language [
 	arguments ifNotEmpty: [ 
-		arguments at: #language ifAbsent: [ ^ arguments keys first asString ].
+		arguments at: #language ifAbsent: [ 
+			(arguments at: arguments keys first) ifEmpty: [ 
+				^ arguments keys first ].
+			^ '' ].
 		^ arguments at: #language ].
 	^ ''
 ]

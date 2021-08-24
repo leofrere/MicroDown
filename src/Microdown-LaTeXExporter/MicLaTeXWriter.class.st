@@ -289,7 +289,7 @@ MicLaTeXWriter >> visitLink: aLink [
 			canvas command
 				name: 'href';
 				parameter: reference;
-				parameter: [ canvas nextPutAll: text ].
+				parameter: [ self visitAll: aLink captionElements ].
 			canvas command
 				name: 'footnote';
 				parameter: [ canvas command name: 'url'; parameter: (self protectUrl: reference) ] ]

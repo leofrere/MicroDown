@@ -66,11 +66,8 @@ this is a code
 MicLaTeXWriterTest >> testCodeblockWithCaption [
 	| mic |
 	mic := parser parse: (factory codeblock: 'caption=Pharo is **cool**' body: 'this is a code').
-	self flag: #toFix.
-	"language = caption is false. It is not the case may in microdown we have ...&language=perl
-	and this creates language=perl in latex."
 	self assert: (writer visit: mic) contents equals: '
-\begin{listing}[caption={Pharo is \textbf{cool}}, language=caption]
+\begin{listing}[caption={Pharo is \textbf{cool}}]
 this is a code
 \end{listing}
 '
@@ -80,10 +77,8 @@ this is a code
 MicLaTeXWriterTest >> testCodeblockWithLabel [
 	| mic |
 	mic := parser parse: (factory codeblock: 'label=Pharo is cool' body: 'this is a code').
-	self flag: #tofix.
-	"This is wrong since language cannot be label"
 	self assert: (writer visit: mic) contents equals: '
-\begin{listing}[language=label, label=Pharo is cool]
+\begin{listing}[label=Pharo is cool]
 this is a code
 \end{listing}
 '
@@ -223,12 +218,9 @@ MicLaTeXWriterTest >> testLink [
 { #category : #'tests - references' }
 MicLaTeXWriterTest >> testLinkBold [
 	| mic |
-	self flag: 'caption do not use bold in the caption'.
 	mic := parser parse: factory linkBoldSample.
-	self flag: #toFix.
-	"\textbf{Foo}"
 	self assert: (writer visit: mic) contents equals: '
-\href{/anUrl}{**Foo**}\footnote{\url{/anUrl}}
+\href{/anUrl}{\textbf{Foo}}\footnote{\url{/anUrl}}
 '
 ]
 
