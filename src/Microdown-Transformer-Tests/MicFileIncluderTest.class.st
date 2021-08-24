@@ -32,6 +32,12 @@ Pharo is **cool**
 ```
 	this is a code 2
 ```
+' ].
+
+	file := filesystem workingDirectory / 'anExample3.mic'.
+	file writeStreamDo: [ :stream | stream nextPutAll: '# Recursive
+
+?{inputfile|path=anExample2.mic}?
 ' ]
 ]
 
@@ -152,6 +158,32 @@ MicFileIncluderTest >> testIncluderIncludesInputFilesWithoutNewline [
 	self assert: mic children first children fifth level equals: 2.
 	self assert: mic children first children sixth class equals: MicParagraphBlock.
 	self assert: mic children first children seventh class equals: MicCodeBlock
+]
+
+{ #category : #tests }
+MicFileIncluderTest >> testIncluderIncludesRecursiveInputFile [
+
+	| includer root file|
+	includer := MicFileIncluder new.
+	
+	file := filesystem workingDirectory / 'test.mic'.
+	file writeStreamDo: [ :stream | stream nextPutAll: '?{inputfile|path=anExample3.mic}?' ].
+	root := (MicroDownParser new parseFile: file).
+	
+	includer visit: root.
+	"even if inputFile was in a paragraph this raises the question of where do we put the expansion. 
+	For example putting a header inside a paragraph does not make sense. 
+	I feel that I would prefer to have a top level expander in addition to an in place expander."
+
+	self assert: root children first children first class equals: MicHeaderBlock.
+	self assert: root children first children first header equals: 'Recursive'.
+	self assert: root children first children second children first class equals: MicHeaderBlock.
+	self assert: root children first children second children first header equals: 'Bar'.
+	self assert: root children first children second children second class equals: MicParagraphBlock.
+	self assert: root children first children second children third class equals: MicCodeBlock.
+
+
+
 ]
 
 { #category : #tests }
