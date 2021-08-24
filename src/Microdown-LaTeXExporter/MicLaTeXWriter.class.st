@@ -290,9 +290,9 @@ MicLaTeXWriter >> visitLink: aLink [
 				name: 'href';
 				parameter: reference;
 				parameter: [ self visitAll: aLink captionElements ].
-			canvas command
+			"canvas command
 				name: 'footnote';
-				parameter: [ canvas command name: 'url'; parameter: (self protectUrl: reference) ] ]
+				parameter: [ canvas command name: 'url'; parameter: (self protectUrl: reference) ]" ]
 ]
 
 { #category : #blocks }

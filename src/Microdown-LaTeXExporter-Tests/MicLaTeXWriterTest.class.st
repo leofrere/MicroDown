@@ -207,11 +207,8 @@ MicLaTeXWriterTest >> testItalic [
 MicLaTeXWriterTest >> testLink [
 	| mic |
 	mic := parser parse: factory linkSample.
-	self flag: #tofix.
-	"footnotesize"
-	
 	self assert: (writer visit: mic) contents equals: '
-\href{/anUrl}{Foo}\footnote{\url{/anUrl}}
+\href{/anUrl}{Foo}
 '
 ]
 
@@ -220,7 +217,7 @@ MicLaTeXWriterTest >> testLinkBold [
 	| mic |
 	mic := parser parse: factory linkBoldSample.
 	self assert: (writer visit: mic) contents equals: '
-\href{/anUrl}{\textbf{Foo}}\footnote{\url{/anUrl}}
+\href{/anUrl}{\textbf{Foo}}
 '
 ]
 
