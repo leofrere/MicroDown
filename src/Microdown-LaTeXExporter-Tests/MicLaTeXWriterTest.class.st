@@ -20,14 +20,14 @@ MicLaTeXWriterTest >> setUp [
 { #category : #tests }
 MicLaTeXWriterTest >> testAnchor [
 	| mic |
-	mic := parser parse: (factory anchorSample).
+	mic := parser parse: factory anchorSample.
 	self assert: (writer visit: mic) contents equals: '\label{test}'
 ]
 
 { #category : #tests }
 MicLaTeXWriterTest >> testAnchorReference [
 	| mic |
-	mic := parser parse: (factory anchorReferenceSample).
+	mic := parser parse: factory anchorReferenceSample.
 	self assert: (writer visit: mic) contents equals: '
 \ref{Foo}
 '
@@ -66,6 +66,9 @@ this is a code
 MicLaTeXWriterTest >> testCodeblockWithCaption [
 	| mic |
 	mic := parser parse: (factory codeblock: 'caption=Pharo is **cool**' body: 'this is a code').
+	self flag: #toFix.
+	"language = caption is false. It is not the case may in microdown we have ...&language=perl
+	and this creates language=perl in latex."
 	self assert: (writer visit: mic) contents equals: '
 \begin{listing}[caption={Pharo is \textbf{cool}}, language=caption]
 this is a code
@@ -77,6 +80,8 @@ this is a code
 MicLaTeXWriterTest >> testCodeblockWithLabel [
 	| mic |
 	mic := parser parse: (factory codeblock: 'label=Pharo is cool' body: 'this is a code').
+	self flag: #tofix.
+	"This is wrong since language cannot be label"
 	self assert: (writer visit: mic) contents equals: '
 \begin{listing}[language=label, label=Pharo is cool]
 this is a code
@@ -88,6 +93,17 @@ this is a code
 MicLaTeXWriterTest >> testFigure [
 	| mic |
 	mic := parser parse: factory figureSample.
+	self flag: #tofix.
+	"we should give something similar to 
+	
+	\begin{figure}[htpb]
+\begin{center}
+\includegraphics[width=\linewidth]{stef-ReferenceSituation2.pdf}
+\caption{A schematic mini project composed of the A, B, C, D, E, and F hierarchies (thick borders denote hierarchy roots). \label{figureIllustrativeExampleCB}}
+\end{center}
+\end{figure}
+"
+
 	self assert: (writer visit: mic) contents equals: '
 
 \begin{figure}
@@ -119,7 +135,7 @@ MicLaTeXWriterTest >> testFigureBold [
 { #category : #tests }
 MicLaTeXWriterTest >> testFootnote [
 	| mic |
-	mic := parser parse: (factory footnoteSample).
+	mic := parser parse: factory footnoteSample.
 	self assert: (writer visit: mic) contents equals: '
 \footnote{Pharo is cool}
 '
@@ -176,7 +192,7 @@ MicLaTeXWriterTest >> testHeaderLevel6 [
 { #category : #tests }
 MicLaTeXWriterTest >> testHorizontalLine [
 	| mic |
-	mic := parser parse: (factory horizontalLineSample).
+	mic := parser parse: factory horizontalLineSample.
 	self assert: (writer visit: mic) contents equals: '
 
 \rule{\textwidth}{0.1pt}
@@ -196,6 +212,9 @@ MicLaTeXWriterTest >> testItalic [
 MicLaTeXWriterTest >> testLink [
 	| mic |
 	mic := parser parse: factory linkSample.
+	self flag: #tofix.
+	"footnotesize"
+	
 	self assert: (writer visit: mic) contents equals: '
 \href{/anUrl}{Foo}\footnote{\url{/anUrl}}
 '
@@ -206,6 +225,8 @@ MicLaTeXWriterTest >> testLinkBold [
 	| mic |
 	self flag: 'caption do not use bold in the caption'.
 	mic := parser parse: factory linkBoldSample.
+	self flag: #toFix.
+	"\textbf{Foo}"
 	self assert: (writer visit: mic) contents equals: '
 \href{/anUrl}{**Foo**}\footnote{\url{/anUrl}}
 '
