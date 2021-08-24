@@ -14,3 +14,9 @@ MicCitationBlock class >> tag [
 MicCitationBlock >> accept: aVisitor [
 	aVisitor visitCitation: self
 ]
+
+{ #category : #accessing }
+MicCitationBlock >> ref [
+	^ arguments at: 'ref' 
+		ifAbsent: [ ^ '' ]
+]

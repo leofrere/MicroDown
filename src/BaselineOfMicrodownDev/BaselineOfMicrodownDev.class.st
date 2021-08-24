@@ -16,22 +16,63 @@ BaselineOfMicrodownDev >> baseline: spec [
 			package: #Microdown;
 			package: #'Microdown-Tests'
 				with: [ spec requires: #( #Microdown ) ];
+			
+			package: #'Microdown-ResolvePath'
+				with: [ spec requires: #( #'Microdown' ) ];	
+			package: #'Microdown-ResolvePath-Tests'
+				with: [ spec requires: #( #'Microdown-ResolvePath' ) ];
+		
 			package: #'Microdown-Pharo-Tools'
 				with: [ spec requires: #( #Microdown ) ];
-			package: #'Microdown-PrettyPrinter'
-				with: [ spec requires: #( #Microdown ) ];
+				
 			package: #'Microdown-MicrodownRichTextComposer'
 				with: [ spec requires: #( #Microdown ) ];
+
+			package: #'Microdown-Transformer'
+				with: [ spec requires: #( #Microdown ) ];
+			package: #'Microdown-Transformer-Tests'
+				with: [ spec requires: #( #'Microdown-Transformer' ) ];
+
+			package: #'Microdown-Evaluator'
+				with: [ spec requires: #( #'Microdown-Transformer' ) ];
+			package: #'Microdown-Evaluator-Tests'
+				with: [ spec requires: #( #'Microdown-Evaluator' ) ];
+
+			package: #'Microdown-PrettyPrinter'
+				with: [ spec requires: #( #Microdown ) ];
+
 			package: #'Microdown-PrettyPrinter-Tests'
 				with: [ spec requires: #( #'Microdown-PrettyPrinter' #'Microdown-Tests') ];
+
 			package: #'Microdown-Pillar'
 				with: [ spec requires: #( #Microdown #PillarDocumentModel ) ];
 			package: #'Microdown-Pillar-Tests'
 				with: [ spec requires: #( #'Microdown-Pillar' #'Microdown-Tests' ) ].
+	
+		"I do not want group without tests for now"
 		spec
-			group: 'Core' with: #('Microdown' #'Microdown-PrettyPrinter');
-			group: 'Pillar' with: #('Microdown' #'Microdown-Pillar' #'Microdown-Pillar-Tests');
-			group: 'RichText' with: #(#'Microdown-MicrodownRichTextComposer');
-			group: 'Tests' with: #('Microdown-Tests' #'Microdown-PrettyPrinter-Tests');
-			group: 'All' with: #('Microdown' 'Tests' #'Microdown-Pharo-Tools') ]
+			group: 'Core' 
+			with: #(
+				#'Microdown'
+				#'Microdown-Tests'
+				#'Microdown-ResolvePath' 
+				#'Microdown-ResolvePath-Tests' 
+				);
+			group: 'Pillar' 
+			with: #(
+				#'Microdown' 
+				#'Microdown-Tests' 
+				#'Microdown-Pillar' 
+				#'Microdown-Pillar-Tests' );
+			group: 'RichText' with: #('Core' #'Microdown-MicrodownRichTextComposer' );
+			group: 'Extensions' 
+			with: #(
+				#'Microdown-Evaluator'
+				#'Microdown-Evaluator-Tests'
+				#'Microdown-PrettyPrinter'
+				#'Microdown-PrettyPrinter-Tests'
+				#'Microdown-Transformer'
+				#'Microdown-Transformer-Tests');
+			group: 'All' 
+			with: #('Core' 'Extensions' #'Microdown-Pharo-Tools' 'RichText')  ]
 ]

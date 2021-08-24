@@ -11,13 +11,6 @@ Class {
 	#category : #'Microdown-Visitor'
 }
 
-{ #category : #'visiting - inline elements' }
-MicrodownVisitor >> fixBlockWithoutMicText: anInlineBlock [
-	"I'm a hack because formatBloc so far do not wrap a MicTextBlock but a plain string"
-	
-	^ self subclassResponsibility
-]
-
 { #category : #'visiting main API' }
 MicrodownVisitor >> visit: aMicElement [
 
@@ -61,6 +54,10 @@ MicrodownVisitor >> visitChildrenOf: aFormat [
 	aFormat children do: [ :each | each accept: self ]
 ]
 
+{ #category : #'visiting - extensions' }
+MicrodownVisitor >> visitCitation: aVisitor [
+]
+
 { #category : #visiting }
 MicrodownVisitor >> visitCode: aCodeBlock [ 
 	 
@@ -86,6 +83,11 @@ MicrodownVisitor >> visitFigure: aFigure [
 ]
 
 { #category : #visiting }
+MicrodownVisitor >> visitFootnote: aFootnote [
+	"subclassResponsibility"
+]
+
+{ #category : #visiting }
 MicrodownVisitor >> visitHeader: aHeader [
 
 	^  aHeader headerElements do: [ :each | each accept: self ]
@@ -93,6 +95,11 @@ MicrodownVisitor >> visitHeader: aHeader [
 
 { #category : #visiting }
 MicrodownVisitor >> visitHorizontalLine: anHorizontalLineBlock [
+]
+
+{ #category : #visiting }
+MicrodownVisitor >> visitInputfile: anInputfile [
+	"subclassResponsibility"
 ]
 
 { #category : #'visiting - inline elements' }
@@ -180,10 +187,15 @@ MicrodownVisitor >> visitStrike: aFormat [
 
 ]
 
+{ #category : #visiting }
+MicrodownVisitor >> visitTable: aTable [
+	"subclassResponsibility"
+]
+
 { #category : #'visiting - inline elements' }
 MicrodownVisitor >> visitText: aMicTextBlock [
 
-	self subclassResponsibility
+	"do nothing"
 ]
 
 { #category : #'visiting - list' }

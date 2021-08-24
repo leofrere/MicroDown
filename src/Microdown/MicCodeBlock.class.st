@@ -59,13 +59,39 @@ MicCodeBlock >> code [
 	^ self body
 ]
 
-{ #category : #'public access' }
+{ #category : #evaluation }
+MicCodeBlock >> eval: aString [
+	arguments at: 'eval' put: aString
+]
+
+{ #category : #'as yet unclassified' }
 MicCodeBlock >> evaluate [
+
 	| content |
 	content := self evaluationString.
 	^ [ (MicAbstractBlock new parserClass new parse: content) children ]
 		on: Error
 		do: [ :e | MicBoldFormatBlock new children: { (MicTextBlock new substring: e messageText) } ]
+]
+
+{ #category : #evaluation }
+MicCodeBlock >> evaluationString [
+	^ String
+		streamContents: [ :stream | 
+			| evaluator |
+			evaluator := MicCodeblockEvaluatorEnv new
+				setStream: stream;
+				yourself.
+			[ self class compiler
+				source: self body;
+				logged: false;
+				receiver: evaluator;
+				evaluate ]
+				on: Error
+				do: [ :e | 
+					stream
+						nextPutAll: '= ';
+						nextPutAll: e description ] ]
 ]
 
 { #category : #handle }
@@ -119,7 +145,8 @@ MicCodeBlock >> label [
 MicCodeBlock >> language [
 	arguments ifNotEmpty: [ 
 		arguments at: #language ifAbsent: [ ^ arguments keys first asString ].
-		^ arguments at: #language ]
+		^ arguments at: #language ].
+	^ ''
 ]
 
 { #category : #utils }

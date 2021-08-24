@@ -1,0 +1,38 @@
+Class {
+	#name : #MicNodeTransformerTest,
+	#superclass : #TestCase,
+	#instVars : [
+		'transformer'
+	],
+	#category : #'Microdown-Transformer-Tests'
+}
+
+{ #category : #running }
+MicNodeTransformerTest >> setUp [
+	super setUp.
+	transformer := MicNodeTransformerCodeDeleterMock new
+
+]
+
+{ #category : #tests }
+MicNodeTransformerTest >> testDeleteNode [
+
+	| root |
+	root := MicroDownParser new parse: '```
+this is a paragraph
+```'.
+	self assert: root children first class equals: MicCodeBlock.
+	transformer visit: root.
+	self assert: root children size equals: 0
+]
+
+{ #category : #tests }
+MicNodeTransformerTest >> testReplaceNodeByAnotherNode [
+
+	| root |
+	root := MicroDownParser new parse: 'this is a paragraph'.
+	self assert: root children first class equals: MicParagraphBlock.
+	transformer visit: root.
+	self assert: root children first class equals: MicTextBlock.
+	self assert: root children first substring equals: 'test'
+]
