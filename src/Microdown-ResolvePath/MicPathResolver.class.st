@@ -6,8 +6,21 @@ The `MicPathResolver` replaces the  url by an url which contains an absolute fil
 Class {
 	#name : #MicPathResolver,
 	#superclass : #MicrodownVisitor,
+	#instVars : [
+		'url'
+	],
 	#category : #'Microdown-ResolvePath'
 }
+
+{ #category : #accessing }
+MicPathResolver >> url [
+	^ url
+]
+
+{ #category : #accessing }
+MicPathResolver >> url: anUrl [
+	url := anUrl
+]
 
 { #category : #visiting }
 MicPathResolver >> visitFigure: aFigure [
