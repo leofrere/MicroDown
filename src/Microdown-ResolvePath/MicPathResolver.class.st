@@ -24,12 +24,17 @@ MicPathResolver >> url: anUrl [
 
 { #category : #visiting }
 MicPathResolver >> visitFigure: aFigure [
-	| originUrl |
+	| originUrl urlSave |
 	originUrl := aFigure originUrl.
+	urlSave := url copy.
 	aFigure url: originUrl.
 	(aFigure url scheme = 'file' and: [ aFigure isRelativeFilePath  ])
-			ifTrue: [ aFigure url:(aFigure originPath / ( aFigure url host ,'/', aFigure url path)) asUrl ].
+			ifTrue: [
+				aFigure url asUrl host ifNotNil: [ url addPathSegment: aFigure url asUrl host ].
+				url addPathSegments: aFigure url asUrl segments.
+				aFigure url: url ].
 	aFigure propertyAt: #originUrl put: originUrl.
+	url := urlSave.
 	^ aFigure
 ]
 
@@ -38,6 +43,6 @@ MicPathResolver >> visitInputfile: anInputFile [
 	anInputFile path: (anInputFile propertyAt: #originalPath  ifAbsent: [ 
 		anInputFile propertyAt: #originalPath put: anInputFile path ]).
 	 anInputFile isRelativeFilePath
-			ifTrue: [ anInputFile path: (anInputFile originPath / anInputFile originalPath ) pathString ].
+			ifTrue: [ anInputFile path: (url asString , '/' , anInputFile originalPath) ].
 	^ anInputFile
 ]
