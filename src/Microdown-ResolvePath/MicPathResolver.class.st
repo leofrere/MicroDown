@@ -12,6 +12,12 @@ Class {
 	#category : #'Microdown-ResolvePath'
 }
 
+{ #category : #initialization }
+MicPathResolver >> initialize [
+	super initialize.
+	url := ZnUrl new.
+]
+
 { #category : #accessing }
 MicPathResolver >> url [
 	^ url
