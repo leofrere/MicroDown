@@ -58,6 +58,8 @@ MicPathResolverTest >> testResolveRelativePath [
 { #category : #tests }
 MicPathResolverTest >> testResolveRelativePathWithInputfile [
 	| mic |
+	self skip.
+	self flag: 'wait how we use the MicFileIncluder'.
 	mic := parser parse: '?{inputfile|path=chapters/withStyle.mic}?' at: '/User' asUrl.
 	self assert: mic children first children first isRelativeFilePath not.
 	self assert: mic children first children first path equals: '/User/chapters/withStyle.mic'
