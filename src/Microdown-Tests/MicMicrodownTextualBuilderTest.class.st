@@ -335,7 +335,7 @@ MicMicrodownTextualBuilderTest >> testMetaData [
 { #category : #'tests - format' }
 MicMicrodownTextualBuilderTest >> testMonospace [
 
-	self assert: (builder monospace: [ builder text: 'Monospace']) contents equals: '`Monospace`'
+	self assert: (builder monospace: 'Monospace') contents equals: '`Monospace`'
 ]
 
 { #category : #'tests - anchor' }

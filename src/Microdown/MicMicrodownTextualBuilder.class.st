@@ -378,9 +378,9 @@ MicMicrodownTextualBuilder >> metaDataFromAssociations: aCollection [
 ]
 
 { #category : #'element - format' }
-MicMicrodownTextualBuilder >> monospace: aBlock [
+MicMicrodownTextualBuilder >> monospace: aString [
 	self raw: parserClass monospaceMarkup.
-	aBlock value.
+	self raw: aString.
 	self raw: parserClass monospaceMarkup.
 ]
 
