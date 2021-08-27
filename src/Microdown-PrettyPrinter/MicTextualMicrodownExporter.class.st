@@ -232,8 +232,7 @@ MicTextualMicrodownExporter >> visitMetaData: aMetaData [
 
 { #category : #'visit - format' }
 MicTextualMicrodownExporter >> visitMonospace: aMonospaceFormat [
-
-	builder monospace: [ self visitChildrenWithoutBackslash: aMonospaceFormat children ]
+	builder monospace: aMonospaceFormat substring
 ]
 
 { #category : #'visit - block' }
