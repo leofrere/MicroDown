@@ -1,3 +1,6 @@
+"
+I allow to parse a String or a Stream to obtain a MicTree on that use the resolver.
+"
 Class {
 	#name : #Microdown,
 	#superclass : #Object,
